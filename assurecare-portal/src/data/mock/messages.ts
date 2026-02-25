@@ -1,0 +1,46 @@
+import type { ChatbotMessage } from '@/types'
+
+export const MOCK_MESSAGES: ChatbotMessage[] = [
+  {
+    id: 'msg-001',
+    senderId: 'user-dr-chan',
+    senderRole: 'doctor',
+    patientId: 'patient-001',
+    content: 'Please remember to take your evening medication.',
+    messageType: 'template',
+    templateId: 'tpl-evening-meds',
+    deliveryStatus: 'sent',
+    sentAt: '2026-02-22T17:00:00Z',
+  },
+  {
+    id: 'msg-002',
+    senderId: 'user-ana',
+    senderRole: 'caregiver',
+    patientId: 'patient-001',
+    content: 'Mum, please remember to take your evening blood pressure medicine. Love, Ana.',
+    messageType: 'free_text',
+    deliveryStatus: 'sent',
+    sentAt: '2026-02-23T18:30:00Z',
+  },
+  {
+    id: 'msg-003',
+    senderId: 'user-dr-chan',
+    senderRole: 'doctor',
+    patientId: 'patient-001',
+    content: 'Your check-in is due — please respond when ready.',
+    messageType: 'template',
+    templateId: 'tpl-checkin-reminder',
+    deliveryStatus: 'sent',
+    sentAt: '2026-02-24T08:00:00Z',
+  },
+  {
+    id: 'msg-004',
+    senderId: 'user-dr-chan',
+    senderRole: 'doctor',
+    patientId: 'patient-002',
+    content: 'Please check in as soon as possible. Your doctor is trying to reach you.',
+    messageType: 'free_text',
+    deliveryStatus: 'queued',
+    sentAt: '2026-02-24T10:00:00Z',
+  },
+]

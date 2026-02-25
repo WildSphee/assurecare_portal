@@ -1,9 +1,10 @@
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { usePatientStore } from '@/store/usePatientStore'
 import { useAppointmentStore } from '@/store/useAppointmentStore'
 import { useUIStore } from '@/store/useUIStore'
 import { useActionLogStore } from '@/store/useActionLogStore'
 import { PatientCard } from './PatientCard'
+import { SkeletonCard } from '@/components/shared/SkeletonCard'
 import { getDateRange } from '@/lib/dateUtils'
 import type { Patient, VitalsRecord, SymptomSignal, Alert, Appointment } from '@/types'
 import { toast } from 'sonner'
@@ -25,6 +26,12 @@ export function PatientCardGrid() {
   const { appointments } = useAppointmentStore()
   const { searchQuery, activeFilters, sortOrder, setSelectedPatient, clearFilters } = useUIStore()
   const { logAction } = useActionLogStore()
+
+  const [isLoading, setIsLoading] = useState(true)
+  useEffect(() => {
+    const t = setTimeout(() => setIsLoading(false), 500)
+    return () => clearTimeout(t)
+  }, [])
 
   const last7Dates = useMemo(() => getDateRange(7), [])
 
@@ -114,6 +121,16 @@ export function PatientCardGrid() {
 
     return sorted
   }, [patientData, searchQuery, activeFilters, sortOrder])
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <SkeletonCard key={i} />
+        ))}
+      </div>
+    )
+  }
 
   if (filteredAndSorted.length === 0) {
     return (
