@@ -19,6 +19,11 @@ interface ChatMessage {
 
 const CAREGIVER_DEFAULT_PATIENT_ID = 'patient-001'
 const DEFAULT_MODEL = 'gpt-4.1-mini'
+const CHAT_WIDGET_EVENT = 'assurecare:chat-widget'
+
+type ChatWidgetEventDetail = {
+  action?: 'open' | 'close' | 'toggle'
+}
 
 function createMessage(role: ChatRole, content: string, isError = false): ChatMessage {
   return {
@@ -264,6 +269,20 @@ export function CaregiverChatWidget() {
     node.scrollTop = node.scrollHeight
   }, [isOpen, messages, isSending])
 
+  useEffect(() => {
+    const handleChatWidgetEvent = (event: Event) => {
+      const customEvent = event as CustomEvent<ChatWidgetEventDetail>
+      const action = customEvent.detail?.action ?? 'toggle'
+
+      if (action === 'open') setIsOpen(true)
+      else if (action === 'close') setIsOpen(false)
+      else setIsOpen((open) => !open)
+    }
+
+    window.addEventListener(CHAT_WIDGET_EVENT, handleChatWidgetEvent as EventListener)
+    return () => window.removeEventListener(CHAT_WIDGET_EVENT, handleChatWidgetEvent as EventListener)
+  }, [])
+
   const canSend = Boolean(apiKey && patientContext && draft.trim() && !isSending)
 
   async function handleSend() {
@@ -454,14 +473,16 @@ export function CaregiverChatWidget() {
         </div>
       )}
 
-      <button
-        type="button"
-        onClick={() => setIsOpen((open) => !open)}
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[70] h-14 w-14 rounded-full bg-primary text-white shadow-lg ring-4 ring-blue-100 transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-        aria-label={isOpen ? 'Close caregiver assistant chat' : 'Open caregiver assistant chat'}
-      >
-        {isOpen ? <X className="mx-auto h-6 w-6" /> : <MessageCircle className="mx-auto h-6 w-6" />}
-      </button>
+      {activeRole !== 'caregiver' && (
+        <button
+          type="button"
+          onClick={() => setIsOpen((open) => !open)}
+          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[70] h-14 w-14 rounded-full bg-primary text-white shadow-lg ring-4 ring-blue-100 transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          aria-label={isOpen ? 'Close caregiver assistant chat' : 'Open caregiver assistant chat'}
+        >
+          {isOpen ? <X className="mx-auto h-6 w-6" /> : <MessageCircle className="mx-auto h-6 w-6" />}
+        </button>
+      )}
     </>
   )
 }

@@ -51,9 +51,14 @@ export function RiskBanner({
       role="status"
       aria-label={`Risk status: ${getRiskLabel(riskLevel)}`}
     >
-      <div className="flex items-start justify-between gap-4">
+      <div
+        className={cn(
+          'gap-4',
+          compact ? 'flex flex-col' : 'flex items-start justify-between'
+        )}
+      >
         {/* Left: Risk level badge + label */}
-        <div className="flex items-center gap-3">
+        <div className={cn('min-w-0', compact ? 'flex flex-col gap-2' : 'flex items-center gap-3')}>
           <div
             className={cn(
               'flex items-center gap-2 px-3 py-1.5 rounded-full font-semibold text-sm border',
@@ -68,7 +73,7 @@ export function RiskBanner({
 
           {/* Reason chips */}
           {reasonCodes.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
+            <div className="min-w-0 flex flex-wrap gap-1.5">
               {reasonCodes.slice(0, 3).map((code) => (
                 <span
                   key={code}
@@ -88,9 +93,9 @@ export function RiskBanner({
         </div>
 
         {/* Right: timestamps */}
-        <div className="text-right shrink-0">
+        <div className={cn(compact ? 'text-left' : 'text-right shrink-0', 'min-w-0')}>
           <p className="text-xs text-slate-500">Updated {formattedTime}</p>
-          <p className="text-xs text-slate-400 mt-0.5">{dataFreshnessLabel}</p>
+          <p className="text-xs text-slate-400 mt-0.5 break-words">{dataFreshnessLabel}</p>
         </div>
       </div>
 

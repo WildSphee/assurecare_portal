@@ -5,6 +5,7 @@ import { useTimeline } from '@/hooks/useTimeline'
 import { formatDayLabel, formatTime } from '@/lib/dateUtils'
 import { getTodayIsoAtUtcTime } from '@/lib/mockDate'
 import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 import type { TimelineEvent } from '@/types'
 
 type TranscriptActor = 'patient' | 'bot'
@@ -151,6 +152,21 @@ export function BotInsightPanel() {
           </div>
           <span className="text-slate-500">Last sync {formatTime(getTodayIsoAtUtcTime('09:08:00'))}</span>
         </div>
+
+        <Button
+          type="button"
+          className="mt-3 w-full justify-center gap-2 bg-blue-600 hover:bg-blue-700"
+          onClick={() =>
+            window.dispatchEvent(
+              new CustomEvent('assurecare:chat-widget', {
+                detail: { action: 'open' },
+              })
+            )
+          }
+        >
+          <MessageSquare className="h-4 w-4" />
+          Chat with Bot
+        </Button>
       </div>
 
       <div className="space-y-3 p-3 xl:max-h-[calc(100vh-16rem)] xl:overflow-y-auto">
