@@ -1,7 +1,6 @@
-import { cn, getRiskBorderColor, getRiskColor, getRiskLabel } from '@/lib/utils'
-import { formatRelative } from '@/lib/dateUtils'
+import { cn } from '@/lib/utils'
 import { REASON_CODE_LABELS } from '@/lib/reasonCodes'
-import type { Patient, VitalsRecord, Appointment, Alert, SymptomSignal } from '@/types'
+import type { Patient, VitalsRecord, Alert, SymptomSignal } from '@/types'
 import { Calendar, AlertTriangle, Pill, Activity, MoreHorizontal, CheckSquare, MessageSquare } from 'lucide-react'
 
 interface AdherenceDot {
@@ -13,7 +12,6 @@ interface PatientCardProps {
   latestVitals?: VitalsRecord | null
   adherenceLast7Days: AdherenceDot[]
   activeSymptoms: SymptomSignal[]
-  nextAppointment?: Appointment | null
   latestAlert?: Alert | null
   onOpen: (id: string) => void
   onSchedule: (id: string) => void
@@ -22,18 +20,11 @@ interface PatientCardProps {
   onFollowUp: (id: string) => void
 }
 
-const RISK_BG: Record<string, string> = {
-  red: 'bg-red-500',
-  yellow: 'bg-amber-400',
-  green: 'bg-emerald-500',
-}
-
 export function PatientCard({
   patient,
   latestVitals,
   adherenceLast7Days,
   activeSymptoms,
-  nextAppointment,
   latestAlert,
   onOpen,
   onSchedule,
@@ -41,22 +32,52 @@ export function PatientCard({
   onMarkReviewed,
   onFollowUp,
 }: PatientCardProps) {
-  const aiLabel = latestAlert
-    ? latestAlert.reasonCodes
-        .slice(0, 2)
-        .map((c) => REASON_CODE_LABELS[c])
-        .join(' + ')
-    : patient.riskStatus === 'green'
-      ? 'Within normal range'
-      : 'Monitoring in progress'
-
   const isNoData = patient.noResponseStreak >= 2
+  const topReasonLabel = latestAlert?.reasonCodes[0]
+    ? REASON_CODE_LABELS[latestAlert.reasonCodes[0]]
+    : null
+  const topSymptom = activeSymptoms[0]
+
+  let primaryIssue = 'Stable check-in, no active issue flagged'
+  let issueMeta: string | null = null
+  let issueToneClass = 'bg-slate-50 text-slate-900 border border-slate-200'
+
+  if (topReasonLabel) {
+    primaryIssue = topReasonLabel
+    issueMeta =
+      latestAlert && latestAlert.reasonCodes.length > 1
+        ? `+${latestAlert.reasonCodes.length - 1} additional signal${latestAlert.reasonCodes.length > 2 ? 's' : ''}`
+        : null
+    if (patient.riskStatus === 'red') {
+      issueToneClass = 'bg-slate-50 text-slate-900 border border-slate-200'
+    } else if (patient.riskStatus === 'yellow') {
+      issueToneClass = 'bg-slate-50 text-slate-900 border border-slate-200'
+    }
+  } else if (topSymptom) {
+    primaryIssue = `${topSymptom.symptomType} (${topSymptom.severity})`
+    issueMeta = activeSymptoms.length > 1 ? `+${activeSymptoms.length - 1} more reported symptom(s)` : null
+    issueToneClass = 'bg-slate-50 text-slate-900 border border-slate-200'
+  } else if (isNoData) {
+    primaryIssue = `No check-in for ${patient.noResponseStreak} days`
+    issueMeta = 'Follow up to confirm patient status'
+    issueToneClass = 'bg-slate-50 text-slate-900 border border-slate-200'
+  }
+
+  const highlightIssue = /chest|shortness|severe/i.test(primaryIssue)
+  const adherenceSummary = adherenceLast7Days.reduce(
+    (acc, dot) => {
+      if (dot.status === 'taken') acc.taken += 1
+      if (dot.status === 'missed') acc.missed += 1
+      return acc
+    },
+    { taken: 0, missed: 0 }
+  )
 
   return (
     <div
       className={cn(
-        'bg-white rounded-xl border border-slate-200 border-l-4 hover:shadow-md transition-shadow cursor-pointer flex flex-col',
-        getRiskBorderColor(patient.riskStatus)
+        'bg-white rounded-2xl border border-slate-200 hover:shadow-md transition-all cursor-pointer flex flex-col p-4 gap-4',
+        highlightIssue && 'ring-1 ring-red-200 shadow-red-50/80'
       )}
       onClick={() => onOpen(patient.id)}
       role="button"
@@ -64,44 +85,46 @@ export function PatientCard({
       onKeyDown={(e) => e.key === 'Enter' && onOpen(patient.id)}
       aria-label={`Open patient details for ${patient.name}`}
     >
-      <div className="p-4 flex-1">
-        {/* Top row: name + risk badge */}
-        <div className="flex items-start justify-between gap-2 mb-2">
+      <div className="flex-1 space-y-4">
+        <div className="flex items-start justify-between gap-3">
           <div>
             <p className="font-semibold text-slate-900 text-sm leading-tight">{patient.name}</p>
-            <p className="text-xs text-slate-500">Age {patient.age}</p>
-          </div>
-          <div className="flex items-center gap-1.5 shrink-0">
-            <div className={cn('w-2.5 h-2.5 rounded-full', RISK_BG[patient.riskStatus])} />
-            <span className={cn('text-xs font-semibold', getRiskColor(patient.riskStatus))}>
-              {getRiskLabel(patient.riskStatus)}
-            </span>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Age {patient.age} · {patient.conditions.slice(0, 2).join(' · ')}
+            </p>
           </div>
         </div>
 
-        {/* AI Label */}
-        <p className="text-xs text-slate-500 italic mb-3 leading-tight">{aiLabel}</p>
+        <div className={cn('rounded-xl px-3 py-3', issueToneClass)}>
+          <p className={cn('leading-tight', highlightIssue ? 'text-base font-bold text-red-800' : 'text-[15px] font-semibold')}>
+            {primaryIssue}
+          </p>
+          {issueMeta && (
+            <p className="mt-1 text-xs text-slate-500">
+              {issueMeta}
+            </p>
+          )}
+        </div>
 
-        {/* No data warning */}
-        {isNoData && (
-          <div className="flex items-center gap-1.5 text-xs text-amber-600 bg-amber-50 rounded-lg px-2.5 py-1.5 mb-3">
-            <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-            <span>No check-in for {patient.noResponseStreak} days</span>
-          </div>
-        )}
+        <div className="grid grid-cols-1 gap-2 text-xs text-slate-600">
+          {latestVitals && (
+            <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-2.5 py-2">
+              <Activity className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+              <span>BP {latestVitals.bpSystolic}/{latestVitals.bpDiastolic} · HR {latestVitals.hrBpm}</span>
+            </div>
+          )}
 
-        {/* Vitals snapshot */}
-        {latestVitals && (
-          <div className="flex items-center gap-1.5 text-xs text-slate-600 mb-3">
-            <Activity className="w-3.5 h-3.5 text-slate-400" />
-            <span>BP {latestVitals.bpSystolic}/{latestVitals.bpDiastolic} · HR {latestVitals.hrBpm} bpm</span>
-          </div>
-        )}
-
-        {/* 7-day adherence dots */}
-        <div className="flex items-center gap-1 mb-3">
-          <Pill className="w-3.5 h-3.5 text-slate-400" />
-          <div className="flex gap-1">
+          <div className="rounded-lg bg-slate-50 px-2.5 py-2">
+            <div className="flex items-center justify-between gap-2 mb-1.5">
+              <div className="flex items-center gap-1.5">
+                <Pill className="w-3.5 h-3.5 text-slate-400" />
+                <span className="font-medium text-slate-700">Medication adherence (7d)</span>
+              </div>
+              <span className="text-slate-500">
+                {adherenceSummary.taken} taken{adherenceSummary.missed > 0 ? ` · ${adherenceSummary.missed} missed` : ''}
+              </span>
+            </div>
+            <div className="flex gap-1">
             {adherenceLast7Days.map((dot, i) => (
               <div
                 key={i}
@@ -114,84 +137,56 @@ export function PatientCard({
                 )}
               />
             ))}
+            </div>
           </div>
-          <span className="text-xs text-slate-400 ml-0.5">7d</span>
+
+          {isNoData && !/no check-in/i.test(primaryIssue) && (
+            <div className="flex items-center gap-2 rounded-lg bg-amber-50 text-amber-700 px-2.5 py-2">
+              <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+              <span>No check-in for {patient.noResponseStreak} days</span>
+            </div>
+          )}
         </div>
-
-        {/* Symptoms */}
-        {activeSymptoms.length > 0 && (
-          <div className="flex items-center gap-1.5 text-xs text-amber-600 mb-3">
-            <AlertTriangle className="w-3.5 h-3.5" />
-            <span>
-              {activeSymptoms[0].symptomType} ({activeSymptoms[0].severity})
-              {activeSymptoms.length > 1 && ` +${activeSymptoms.length - 1} more`}
-            </span>
-          </div>
-        )}
-
-        {/* Next appointment */}
-        {nextAppointment && (
-          <div className="flex items-center gap-1.5 text-xs text-slate-500">
-            <Calendar className="w-3.5 h-3.5 text-slate-400" />
-            <span>
-              Appt:{' '}
-              {nextAppointment.scheduledAt
-                ? new Date(nextAppointment.scheduledAt).toLocaleDateString('en-SG', { month: 'short', day: 'numeric' })
-                : 'Requested'}
-            </span>
-          </div>
-        )}
       </div>
 
-      {/* Data freshness */}
-      <div className="px-4 py-2 border-t border-slate-100">
-        <p className="text-xs text-slate-400">Updated {formatRelative(patient.lastCheckinAt)}</p>
-      </div>
-
-      {/* Action row */}
       <div
-        className="px-3 py-2 border-t border-slate-100 flex items-center gap-1 flex-wrap"
+        className="mt-auto flex items-center justify-end gap-2"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          onClick={() => onOpen(patient.id)}
-          className="text-xs text-primary hover:underline font-medium px-2 py-1"
-          aria-label={`Open ${patient.name} details`}
-        >
-          Open
-        </button>
-        <button
-          onClick={() => onFollowUp(patient.id)}
-          className="text-xs text-slate-600 hover:text-primary transition-colors p-1 rounded hover:bg-slate-50"
-          title="Send follow-up message"
-          aria-label={`Send follow-up to ${patient.name}`}
-        >
-          <MessageSquare className="w-3.5 h-3.5" />
-        </button>
-        <button
-          onClick={() => onSchedule(patient.id)}
-          className="text-xs text-slate-600 hover:text-primary transition-colors p-1 rounded hover:bg-slate-50"
-          title="Schedule appointment"
-          aria-label={`Schedule appointment for ${patient.name}`}
-        >
-          <Calendar className="w-3.5 h-3.5" />
-        </button>
-        <button
-          onClick={() => onAddNote(patient.id)}
-          className="text-xs text-slate-600 hover:text-primary transition-colors p-1 rounded hover:bg-slate-50"
-          title="Add note"
-          aria-label={`Add note for ${patient.name}`}
-        >
-          <MoreHorizontal className="w-3.5 h-3.5" />
-        </button>
-        <button
-          onClick={() => onMarkReviewed(patient.id)}
-          className="text-xs text-slate-600 hover:text-emerald-600 transition-colors p-1 rounded hover:bg-slate-50"
-          title="Mark reviewed"
-          aria-label={`Mark ${patient.name} as reviewed`}
-        >
-          <CheckSquare className="w-3.5 h-3.5" />
-        </button>
+        <div className="flex items-center gap-1 justify-end">
+          <button
+            onClick={() => onFollowUp(patient.id)}
+            className="text-xs text-slate-600 hover:text-primary transition-colors p-1.5 rounded-lg hover:bg-slate-100"
+            title="Send follow-up message"
+            aria-label={`Send follow-up to ${patient.name}`}
+          >
+            <MessageSquare className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={() => onSchedule(patient.id)}
+            className="text-xs text-slate-600 hover:text-primary transition-colors p-1.5 rounded-lg hover:bg-slate-100"
+            title="Schedule appointment"
+            aria-label={`Schedule appointment for ${patient.name}`}
+          >
+            <Calendar className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={() => onAddNote(patient.id)}
+            className="text-xs text-slate-600 hover:text-primary transition-colors p-1.5 rounded-lg hover:bg-slate-100"
+            title="Add note"
+            aria-label={`Add note for ${patient.name}`}
+          >
+            <MoreHorizontal className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={() => onMarkReviewed(patient.id)}
+            className="text-xs text-slate-600 hover:text-emerald-600 transition-colors p-1.5 rounded-lg hover:bg-slate-100"
+            title="Mark reviewed"
+            aria-label={`Mark ${patient.name} as reviewed`}
+          >
+            <CheckSquare className="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
     </div>
   )

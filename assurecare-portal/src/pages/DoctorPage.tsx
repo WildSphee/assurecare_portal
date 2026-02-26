@@ -1,5 +1,4 @@
 import { useUIStore } from '@/store/useUIStore'
-import { KPICounters } from '@/components/doctor/KPICounters'
 import { DoctorHeader } from '@/components/doctor/DoctorHeader'
 import { PatientCardGrid } from '@/components/doctor/PatientCardGrid'
 import { PatientTable } from '@/components/doctor/PatientTable'
@@ -13,9 +12,6 @@ export function DoctorPage() {
     <>
       {/* Sticky sub-header (below AppShell 64px) */}
       <DoctorHeader />
-
-      {/* KPI Counters */}
-      <KPICounters />
 
       {/* Main content */}
       <div className="min-h-[60vh]">

@@ -4,15 +4,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { LayoutGrid, List, Map, Search, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-const FILTER_CHIPS = ['Red', 'Yellow', 'No data >48h', 'Post-discharge', 'Hypertension']
-
 export function DoctorHeader() {
-  const { searchQuery, setSearch, activeFilters, toggleFilter, clearFilters, doctorViewMode, setViewMode, sortOrder, setSortOrder } =
+  const { searchQuery, setSearch, doctorViewMode, setViewMode, sortOrder, setSortOrder } =
     useUIStore()
 
   return (
-    <div className="sticky top-16 z-40 bg-white border-b border-slate-200 shadow-sm px-6 py-3 space-y-3">
-      {/* Row 1: Search + Sort + View toggles */}
+    <div className="sticky top-16 z-40 bg-white border-b border-slate-200 shadow-sm px-6 py-3">
       <div className="flex items-center gap-3 flex-wrap">
         <div className="relative flex-1 min-w-48">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -68,35 +65,6 @@ export function DoctorHeader() {
             <Map className="w-4 h-4" />
           </button>
         </div>
-      </div>
-
-      {/* Row 2: Filter chips */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <span className="text-xs text-slate-500 font-medium">Filter:</span>
-        {FILTER_CHIPS.map((chip) => {
-          const isActive = activeFilters.includes(chip)
-          return (
-            <button
-              key={chip}
-              onClick={() => toggleFilter(chip)}
-              className={cn(
-                'text-xs px-3 py-1 rounded-full border font-medium transition-all',
-                isActive
-                  ? 'bg-primary text-white border-primary'
-                  : 'bg-white text-slate-600 border-slate-300 hover:border-primary hover:text-primary'
-              )}
-              aria-pressed={isActive}
-            >
-              {chip}
-            </button>
-          )
-        })}
-        {activeFilters.length > 0 && (
-          <button onClick={clearFilters} className="text-xs text-slate-400 hover:text-red-500 flex items-center gap-1 transition-colors ml-1">
-            <X className="w-3 h-3" />
-            Clear
-          </button>
-        )}
       </div>
     </div>
   )

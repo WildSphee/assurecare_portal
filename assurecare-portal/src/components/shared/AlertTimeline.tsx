@@ -22,6 +22,7 @@ interface AlertTimelineProps {
   daysBack: 7 | 14
   onDaysBackChange?: (d: 7 | 14) => void
   role?: 'caregiver' | 'doctor'
+  hideHeader?: boolean
 }
 
 const CATEGORY_ICON: Record<TimelineEvent['category'], React.ReactNode> = {
@@ -124,14 +125,20 @@ function EventCard({ event, role }: { event: TimelineEvent; role: 'caregiver' | 
   )
 }
 
-export function AlertTimeline({ events, daysBack, onDaysBackChange, role = 'caregiver' }: AlertTimelineProps) {
+export function AlertTimeline({
+  events,
+  daysBack,
+  onDaysBackChange,
+  role = 'caregiver',
+  hideHeader = false,
+}: AlertTimelineProps) {
   const grouped = groupByDay(events)
   const sortedDays = Array.from(grouped.keys()).sort((a, b) => b.localeCompare(a))
 
   return (
     <div id="timeline">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-slate-900">Recent Activity</h2>
+      <div className={cn('flex items-center justify-between', hideHeader ? 'mb-4' : 'mb-6')}>
+        {!hideHeader && <h2 className="text-xl font-semibold text-slate-900">Recent Activity</h2>}
         {onDaysBackChange && (
           <div className="flex items-center gap-1 bg-slate-100 rounded-full p-0.5">
             {([7, 14] as const).map((d) => (

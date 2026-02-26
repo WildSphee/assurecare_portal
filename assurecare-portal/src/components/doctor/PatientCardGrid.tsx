@@ -6,11 +6,42 @@ import { useActionLogStore } from '@/store/useActionLogStore'
 import { PatientCard } from './PatientCard'
 import { SkeletonCard } from '@/components/shared/SkeletonCard'
 import { getDateRange } from '@/lib/dateUtils'
-import type { Patient, VitalsRecord, SymptomSignal, Alert, Appointment } from '@/types'
+import { cn } from '@/lib/utils'
+import type { Patient, VitalsRecord, SymptomSignal, Alert, Appointment, RiskLevel } from '@/types'
 import { toast } from 'sonner'
 import { Users } from 'lucide-react'
 
 const RISK_ORDER: Record<string, number> = { red: 0, yellow: 1, green: 2 }
+
+const BOARD_COLUMNS: Array<{
+  risk: RiskLevel
+  title: string
+  subtitle: string
+  columnClass: string
+  badgeClass: string
+}> = [
+  {
+    risk: 'red',
+    title: 'Priority Review',
+    subtitle: 'Severe symptoms or high-risk signals',
+    columnClass: 'border-red-200 bg-gradient-to-b from-red-100/80 via-red-50 to-white',
+    badgeClass: 'bg-red-100 text-red-700 border-red-200',
+  },
+  {
+    risk: 'yellow',
+    title: 'Monitor',
+    subtitle: 'Needs follow-up soon',
+    columnClass: 'border-amber-200 bg-gradient-to-b from-amber-100/80 via-amber-50 to-white',
+    badgeClass: 'bg-amber-100 text-amber-700 border-amber-200',
+  },
+  {
+    risk: 'green',
+    title: 'Stable',
+    subtitle: 'No immediate concerns',
+    columnClass: 'border-emerald-200 bg-gradient-to-b from-emerald-100/80 via-emerald-50 to-white',
+    badgeClass: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+  },
+]
 
 interface PatientRowData {
   patient: Patient
@@ -122,6 +153,14 @@ export function PatientCardGrid() {
     return sorted
   }, [patientData, searchQuery, activeFilters, sortOrder])
 
+  const groupedPatients = useMemo(() => {
+    return {
+      red: filteredAndSorted.filter((item) => item.patient.riskStatus === 'red'),
+      yellow: filteredAndSorted.filter((item) => item.patient.riskStatus === 'yellow'),
+      green: filteredAndSorted.filter((item) => item.patient.riskStatus === 'green'),
+    } as const
+  }, [filteredAndSorted])
+
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
@@ -149,37 +188,73 @@ export function PatientCardGrid() {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
-      {filteredAndSorted.map(
-        ({ patient, latestVitals, adherenceLast7Days, activeSymptoms, latestAlert, nextAppointment }) => (
-          <PatientCard
-            key={patient.id}
-            patient={patient}
-            latestVitals={latestVitals}
-            adherenceLast7Days={adherenceLast7Days}
-            activeSymptoms={activeSymptoms}
-            nextAppointment={nextAppointment}
-            latestAlert={latestAlert}
-            onOpen={(id) => setSelectedPatient(id)}
-            onSchedule={(id) => {
-              setSelectedPatient(id)
-              toast.info('Opening patient details to schedule appointment')
-            }}
-            onAddNote={(id) => {
-              setSelectedPatient(id)
-              toast.info('Opening patient details to add note')
-            }}
-            onMarkReviewed={(id) => {
-              logAction('user-dr-chan', 'doctor', id, 'mark_reviewed', {})
-              toast.success(`${patient.name} marked as reviewed`)
-            }}
-            onFollowUp={(id) => {
-              setSelectedPatient(id)
-              toast.info('Opening patient details to send follow-up message')
-            }}
-          />
-        )
-      )}
+    <div className="p-4 sm:p-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
+        {BOARD_COLUMNS.map((column) => {
+          const columnPatients = groupedPatients[column.risk]
+
+          return (
+            <section
+              key={column.risk}
+              className={cn('rounded-2xl border p-4 shadow-sm min-h-[520px]', column.columnClass)}
+              aria-label={`${column.title} patient column`}
+            >
+              <div className="mb-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-sm font-semibold text-slate-900">{column.title}</h3>
+                    <p className="text-xs text-slate-500">{column.subtitle}</p>
+                  </div>
+                  <span
+                    className={cn(
+                      'inline-flex items-center justify-center min-w-7 h-7 rounded-full border px-2 text-xs font-semibold',
+                      column.badgeClass
+                    )}
+                  >
+                    {columnPatients.length}
+                  </span>
+                </div>
+              </div>
+
+              <div className="space-y-3 min-h-16">
+                {columnPatients.length === 0 ? (
+                  <div className="rounded-xl border border-dashed border-slate-300 bg-white/70 p-4 text-xs text-slate-500">
+                    No patients in this category.
+                  </div>
+                ) : (
+                  columnPatients.map(({ patient, latestVitals, adherenceLast7Days, activeSymptoms, latestAlert }) => (
+                    <PatientCard
+                      key={patient.id}
+                      patient={patient}
+                      latestVitals={latestVitals}
+                      adherenceLast7Days={adherenceLast7Days}
+                      activeSymptoms={activeSymptoms}
+                      latestAlert={latestAlert}
+                      onOpen={(id) => setSelectedPatient(id)}
+                      onSchedule={(id) => {
+                        setSelectedPatient(id)
+                        toast.info('Opening patient details to schedule appointment')
+                      }}
+                      onAddNote={(id) => {
+                        setSelectedPatient(id)
+                        toast.info('Opening patient details to add note')
+                      }}
+                      onMarkReviewed={(id) => {
+                        logAction('user-dr-chan', 'doctor', id, 'mark_reviewed', {})
+                        toast.success(`${patient.name} marked as reviewed`)
+                      }}
+                      onFollowUp={(id) => {
+                        setSelectedPatient(id)
+                        toast.info('Opening patient details to send follow-up message')
+                      }}
+                    />
+                  ))
+                )}
+              </div>
+            </section>
+          )
+        })}
+      </div>
     </div>
   )
 }

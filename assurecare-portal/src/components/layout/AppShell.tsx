@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom'
 import { useUIStore } from '@/store/useUIStore'
 import { RoleNav } from './RoleNav'
-import { Activity } from 'lucide-react'
+import { CaregiverChatWidget } from '@/components/shared/CaregiverChatWidget'
 
 export function AppShell() {
   const { activeRole } = useUIStore()
@@ -12,7 +12,7 @@ export function AppShell() {
       <header className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm h-16 flex items-center px-6">
         <div className="flex items-center gap-2 flex-1">
           <div className="flex items-center gap-2 text-primary font-bold text-xl">
-            <Activity className="w-6 h-6" />
+            <img src="/assurecare-logo.svg" alt="AssureCare logo" className="w-7 h-7 rounded-md" />
             <span>AssureCare</span>
           </div>
           <span className="text-slate-300 text-lg ml-1">|</span>
@@ -39,6 +39,8 @@ export function AppShell() {
       <main className="flex-1">
         <Outlet />
       </main>
+
+      <CaregiverChatWidget />
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { Sparkles, ChevronDown, ChevronUp, Info } from 'lucide-react'
+import { Sparkles, ChevronDown, ChevronUp } from 'lucide-react'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import type { AISummary as AISummaryType, RiskLevel } from '@/types'
@@ -38,19 +38,44 @@ function getHighlightIcon(text: string): string {
   return '•'
 }
 
+function getConciseNarrative(text: string): string {
+  const normalized = text.trim().replace(/\s+/g, ' ')
+  if (normalized.length <= 340) return normalized
+
+  const sentences = normalized.match(/[^.!?]+[.!?]?/g)?.map((s) => s.trim()).filter(Boolean) ?? []
+  const firstThree = sentences.slice(0, 3).join(' ')
+  if (firstThree && firstThree.length <= 420) return firstThree
+
+  return `${normalized.slice(0, 360).trimEnd()}…`
+}
+
 export function AISummary({ summary, riskLevel, variant = 'caregiver' }: AISummaryProps) {
   const [showNarrative, setShowNarrative] = useState(false)
+  const isCaregiver = variant === 'caregiver'
+  const narrativeText = isCaregiver ? getConciseNarrative(summary.narrative) : summary.narrative
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-5">
+    <div
+      className={cn(
+        'rounded-xl border p-5',
+        isCaregiver
+          ? 'border-violet-300 bg-gradient-to-br from-violet-100 via-purple-50 to-fuchsia-100 shadow-[0_8px_24px_-18px_rgba(124,58,237,0.45)]'
+          : 'border-slate-200 bg-white'
+      )}
+    >
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-primary/10 rounded-lg flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-primary" />
+          <div
+            className={cn(
+              'w-7 h-7 rounded-lg flex items-center justify-center',
+              isCaregiver ? 'bg-violet-200/90' : 'bg-primary/10'
+            )}
+          >
+            <Sparkles className={cn('w-4 h-4', isCaregiver ? 'text-violet-800' : 'text-primary')} />
           </div>
           <h3 className="font-semibold text-slate-900">
-            {variant === 'clinical' ? 'Clinical Summary' : 'Key Things to Note'}
+            {variant === 'clinical' ? 'Clinical Summary' : 'AI Insight'}
           </h3>
         </div>
         <div className="text-right">
@@ -63,22 +88,17 @@ export function AISummary({ summary, riskLevel, variant = 'caregiver' }: AISumma
         </div>
       </div>
 
-      {/* Data coverage */}
-      <p className="text-xs text-slate-400 mb-4 flex items-center gap-1">
-        <Info className="w-3 h-3" />
-        Based on data: {summary.dataCoverageRange.from} – {summary.dataCoverageRange.to}
-      </p>
-
-      {/* Why the banner */}
-      <div
-        className={cn(
-          'rounded-lg p-3 mb-4 text-sm',
-          riskLevel === 'red' && 'bg-red-50 border border-red-200 text-red-800',
-          riskLevel === 'yellow' && 'bg-amber-50 border border-amber-200 text-amber-800',
-          riskLevel === 'green' && 'bg-emerald-50 border border-emerald-200 text-emerald-800',
-        )}
-        dangerouslySetInnerHTML={{ __html: RISK_LEVEL_COPY[riskLevel] }}
-      />
+      {!isCaregiver && (
+        <div
+          className={cn(
+            'rounded-lg p-3 mb-4 text-sm',
+            riskLevel === 'red' && 'bg-red-50 border border-red-200 text-red-800',
+            riskLevel === 'yellow' && 'bg-amber-50 border border-amber-200 text-amber-800',
+            riskLevel === 'green' && 'bg-emerald-50 border border-emerald-200 text-emerald-800',
+          )}
+          dangerouslySetInnerHTML={{ __html: RISK_LEVEL_COPY[riskLevel] }}
+        />
+      )}
 
       {/* Highlights */}
       <div className="space-y-2 mb-4">
@@ -90,19 +110,27 @@ export function AISummary({ summary, riskLevel, variant = 'caregiver' }: AISumma
         ))}
       </div>
 
-      {/* Full narrative toggle */}
-      <button
-        onClick={() => setShowNarrative(!showNarrative)}
-        className="text-xs text-primary font-medium flex items-center gap-1 hover:opacity-80 transition-opacity mb-3"
-        aria-expanded={showNarrative}
-      >
-        {showNarrative ? 'Hide full summary' : 'Show full summary'}
-        {showNarrative ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-      </button>
+      {!isCaregiver && (
+        <button
+          onClick={() => setShowNarrative(!showNarrative)}
+          className="text-xs text-primary font-medium flex items-center gap-1 hover:opacity-80 transition-opacity mb-3"
+          aria-expanded={showNarrative}
+        >
+          {showNarrative ? 'Hide full summary' : 'Show full summary'}
+          {showNarrative ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+        </button>
+      )}
 
-      {showNarrative && (
-        <p className="text-sm text-slate-600 leading-relaxed bg-slate-50 rounded-lg p-3 mb-4">
-          {summary.narrative}
+      {(isCaregiver || showNarrative) && (
+        <p
+          className={cn(
+            'text-sm leading-relaxed mb-4',
+            isCaregiver
+              ? 'text-slate-700'
+              : 'text-slate-600 rounded-lg p-3 bg-slate-50'
+          )}
+        >
+          {narrativeText}
         </p>
       )}
 
@@ -123,10 +151,6 @@ export function AISummary({ summary, riskLevel, variant = 'caregiver' }: AISumma
         </div>
       )}
 
-      {/* Disclaimer */}
-      <p className="text-xs text-slate-400 mt-4 border-t border-slate-100 pt-3">
-        This summary is for informational purposes only and is derived from structured check-in data. It is not medical advice. Consult Dr. Chan for clinical decisions.
-      </p>
     </div>
   )
 }

@@ -3,7 +3,11 @@ import { TrendChart } from '@/components/shared/TrendChart'
 import { useVitalsHistory } from '@/hooks/useVitalsHistory'
 import { useAdherenceHistory } from '@/hooks/useAdherenceHistory'
 
-export function TrendChartsSection() {
+interface TrendChartsSectionProps {
+  hideHeader?: boolean
+}
+
+export function TrendChartsSection({ hideHeader = false }: TrendChartsSectionProps) {
   const [timeRange, setTimeRange] = useState<7 | 14 | 30>(14)
   const [viewMode, setViewMode] = useState<'daily' | 'rolling_avg'>('daily')
 
@@ -12,9 +16,11 @@ export function TrendChartsSection() {
 
   return (
     <div id="trends">
-      <h2 className="text-xl font-semibold text-slate-900 border-b border-slate-200 pb-3 mb-6">
-        Health Trends
-      </h2>
+      {!hideHeader && (
+        <h2 className="text-xl font-semibold text-slate-900 border-b border-slate-200 pb-3 mb-6">
+          Health Trends
+        </h2>
+      )}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <TrendChart
           title="Blood Pressure (Systolic)"

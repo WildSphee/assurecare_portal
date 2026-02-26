@@ -11,6 +11,7 @@ interface RiskBannerProps {
   lastUpdatedAt: string
   dataFreshnessLabel: string
   showDetailedScoring?: boolean
+  showExplainabilityToggle?: boolean
   compact?: boolean
 }
 
@@ -27,6 +28,7 @@ export function RiskBanner({
   lastUpdatedAt,
   dataFreshnessLabel,
   showDetailedScoring = false,
+  showExplainabilityToggle = true,
   compact = false,
 }: RiskBannerProps) {
   const [expanded, setExpanded] = useState(false)
@@ -93,7 +95,7 @@ export function RiskBanner({
       </div>
 
       {/* Explainability toggle */}
-      {!compact && (
+      {!compact && showExplainabilityToggle && (
         <>
           <button
             onClick={() => setExpanded(!expanded)}
