@@ -5,17 +5,15 @@ import { useUIStore } from '@/store/useUIStore'
 import { usePatient } from '@/hooks/usePatient'
 import { useActionLogStore } from '@/store/useActionLogStore'
 import { RiskBanner } from '@/components/shared/RiskBanner'
-import { RiskScoreToggle } from './RiskScoreToggle'
 import { DrillDownOverview } from './DrillDownOverview'
 import { DrillDownCharts } from './DrillDownCharts'
 import { DrillDownTimeline } from './DrillDownTimeline'
 import { DoctorNotesEditor } from './DoctorNotesEditor'
-import { MapPin, X } from 'lucide-react'
+import { MapPin } from 'lucide-react'
 import { formatRelative } from '@/lib/dateUtils'
 
 function DrillDownContent({ patientId }: { patientId: string }) {
   const { patient, latestAlert, latestVitals } = usePatient(patientId)
-  const { showDetailedScoring, setSelectedPatient } = useUIStore()
   const { logAction } = useActionLogStore()
 
   useEffect(() => {
@@ -47,16 +45,6 @@ function DrillDownContent({ patientId }: { patientId: string }) {
                 <span className="truncate">{patient.location.area}</span>
               </div>
             )}
-            <div className="flex items-center gap-2">
-              <RiskScoreToggle />
-              <button
-                onClick={() => setSelectedPatient(null)}
-                className="p-1.5 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
-                aria-label="Close patient panel"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
           </div>
         </div>
 
@@ -69,7 +57,6 @@ function DrillDownContent({ patientId }: { patientId: string }) {
               evidencePointers={latestAlert.evidencePointers}
               lastUpdatedAt={latestAlert.createdAt}
               dataFreshnessLabel={dataFreshnessLabel}
-              showDetailedScoring={showDetailedScoring}
               compact
             />
           </div>
