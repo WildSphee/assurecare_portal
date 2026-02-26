@@ -34,6 +34,10 @@ function extractQuotedPatientText(narrative?: string | null): string | null {
   return match?.[1] ?? null
 }
 
+function containsChinese(text: string): boolean {
+  return /[\u3400-\u9fff]/.test(text)
+}
+
 function groupEventsByDay(events: TimelineEvent[]) {
   const map = new Map<string, TimelineEvent[]>()
   for (const event of events) {
@@ -54,6 +58,15 @@ export function BotInsightPanel() {
     const patientQuote =
       extractQuotedPatientText(dailySummary?.narrative) ??
       '我今天胸口有一点痛。'
+    const patientQuoteIsChinese = containsChinese(patientQuote)
+
+    const botSymptomQuestion = patientQuoteIsChinese
+      ? '今天有没有不舒服，比如胸口不适、头晕或呼吸急促？'
+      : 'Any symptoms today, such as chest discomfort, dizziness, or shortness of breath?'
+
+    const botFollowUp = patientQuoteIsChinese
+      ? '我已记录你的症状，并会标记给护理人员和医生查看。如果胸痛加重或呼吸困难，请立刻寻求紧急帮助。'
+      : 'I have logged the symptom and will flag this for review. Please rest and seek urgent help if pain worsens or breathing becomes difficult.'
 
     const entries: TranscriptEntry[] = [
       {
@@ -72,7 +85,7 @@ export function BotInsightPanel() {
         id: 'bot-checkin-2',
         actor: 'bot',
         timestamp: getTodayIsoAtUtcTime('09:04:00'),
-        text: 'Any symptoms today, such as chest discomfort, dizziness, or shortness of breath?',
+        text: botSymptomQuestion,
       },
       {
         id: 'pt-checkin-2',
@@ -84,7 +97,7 @@ export function BotInsightPanel() {
         id: 'bot-checkin-3',
         actor: 'bot',
         timestamp: getTodayIsoAtUtcTime('09:06:00'),
-        text: 'I have logged the symptom and will flag this for review. Please rest and seek urgent help if pain worsens or breathing becomes difficult.',
+        text: botFollowUp,
       },
     ]
 
