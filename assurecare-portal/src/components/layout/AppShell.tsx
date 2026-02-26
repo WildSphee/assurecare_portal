@@ -41,7 +41,9 @@ export function AppShell() {
             <span>AssureCare</span>
           </div>
           <span className="text-slate-300 text-lg ml-1">|</span>
-          <span className="text-slate-500 text-sm">Health Monitoring Portal</span>
+          <span className="text-slate-500 text-sm">
+            {routeRole === 'caregiver' ? 'Caregiver Portal' : 'Doctor Portal'}
+          </span>
         </div>
 
         <div className="ml-auto flex items-center">
