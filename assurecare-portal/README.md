@@ -1,73 +1,56 @@
-# React + TypeScript + Vite
+# AssureCare Portal
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+AssureCare Portal is a React + TypeScript + Vite demo app for caregiver/doctor workflows with mock patient data, alerts, vitals, adherence, summaries, and chat.
 
-Currently, two official plugins are available:
+## Current Chat Behavior (Mocked)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The caregiver assistant chat is fully mocked.
 
-## React Compiler
+- No OpenAI SDK/library is used.
+- No OpenAI API request is made.
+- Whatever the user types, the chat replies with **Ms. Tan's current status** and a concise **"What to do now"** action checklist using local mock data.
+- A mock loading state is shown before each reply (3-second delay, "Reloading...").
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Recent UX / Data Updates
 
-## Expanding the ESLint configuration
+- Doctor patient drilldown now opens as a **floating window widget** (instead of a full-height side panel).
+- Trend charts are **daily-only** (the `3-day avg` toggle was removed).
+- Chatbot avatar uses the project `bot.png` image (photo-style crop in caregiver panel and doctor floating chatbot button).
+- Ms. Tan's red alert now explicitly prioritizes **mild heartache reported** in addition to missed meds.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Tech Stack
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- React 19
+- TypeScript
+- Vite
+- Zustand
+- Tailwind CSS
+- Radix UI
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Getting Started
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open the local Vite URL shown in the terminal.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Scripts
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- `npm run dev` - Start local development server
+- `npm run build` - Type-check and build production bundle
+- `npm run preview` - Preview production build locally
+- `npm run lint` - Run ESLint
+
+## Environment Variables
+
+No OpenAI environment variables are required for chat.
+
+If your local `.env` still contains `VITE_OPENAI_API_KEY` / `VITE_OPENAI_MODEL`, they are currently unused.
+
+## Notes
+
+- The app uses mock data sources under `src/data/mock/`.
+- The mocked chat response pulls Ms. Tan data (`patient-001`) regardless of the currently selected patient.
+- Ms. Tan's active red alert includes both `SYMPTOM_HEARTACHE_MILD` and `MISSED_MEDS_STREAK_2`.

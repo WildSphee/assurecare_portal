@@ -127,8 +127,8 @@ export function DrillDownPanel() {
     <Sheet open={isOpen} onOpenChange={(open) => !open && setSelectedPatient(null)}>
       <SheetContent
         side="right"
-        className="w-full sm:w-[680px] sm:max-w-[90vw] p-0 flex flex-col"
-        aria-label="Patient details panel"
+        className="!inset-y-auto !top-[4.5rem] !right-2 !bottom-2 !h-auto !w-[calc(100vw-1rem)] sm:!top-20 sm:!right-6 sm:!bottom-6 sm:!w-[680px] sm:!max-w-none p-0 flex flex-col rounded-2xl border border-slate-200 shadow-2xl overflow-hidden"
+        aria-label="Patient details window"
       >
         <SheetHeader className="sr-only">
           <SheetTitle>Patient Details</SheetTitle>

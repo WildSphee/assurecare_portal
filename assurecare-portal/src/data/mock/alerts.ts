@@ -6,7 +6,7 @@ export const MOCK_ALERTS: Alert[] = [
     id: 'alert-001',
     patientId: 'patient-001',
     severity: 'red',
-    reasonCodes: ['MISSED_MEDS_STREAK_2'],
+    reasonCodes: ['SYMPTOM_HEARTACHE_MILD', 'MISSED_MEDS_STREAK_2'],
     evidencePointers: [
       {
         description: 'Evening medication missed on Feb 23 and Feb 24 (2-day streak)',

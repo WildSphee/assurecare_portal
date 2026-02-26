@@ -131,13 +131,21 @@ export function BotInsightPanel() {
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] font-medium text-slate-600">
-              <Bot className="h-3.5 w-3.5" />
               <span>Bot Insight</span>
             </div>
-            <p className="mt-2 text-sm font-semibold text-slate-900 truncate">
-              AssureBot Home Unit · {patientShortName}
-            </p>
-            <p className="mt-0.5 text-xs text-slate-500">Connected via home bedside device</p>
+            <div className="mt-2 flex items-start gap-3">
+              <img
+                src="/images/bot.png"
+                alt="AssureBot"
+                className="h-12 w-12 shrink-0 rounded-lg object-cover"
+              />
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-slate-900 truncate">
+                  AssureBot Home Unit
+                </p>
+                <p className="mt-0.5 text-xs text-slate-500">Connected via home bedside device · {patientShortName}</p>
+              </div>
+            </div>
           </div>
           <div className={cn('inline-flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-medium', batteryTone)}>
             <BatteryMedium className="h-3.5 w-3.5" />

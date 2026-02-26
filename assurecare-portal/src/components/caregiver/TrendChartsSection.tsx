@@ -9,7 +9,6 @@ interface TrendChartsSectionProps {
 
 export function TrendChartsSection({ hideHeader = false }: TrendChartsSectionProps) {
   const [timeRange, setTimeRange] = useState<7 | 14 | 30>(14)
-  const [viewMode, setViewMode] = useState<'daily' | 'rolling_avg'>('daily')
 
   const { bpSystolic, hrBpm } = useVitalsHistory('patient-001', timeRange)
   const { adherencePct } = useAdherenceHistory('patient-001', timeRange)
@@ -31,8 +30,6 @@ export function TrendChartsSection({ hideHeader = false }: TrendChartsSectionPro
           onTimeRangeChange={setTimeRange}
           referenceBand={{ lower: 90, upper: 130, label: 'Target range' }}
           referenceLines={[{ value: 140, label: 'High', color: '#ef4444' }]}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
         />
         <TrendChart
           title="Heart Rate"
@@ -42,8 +39,6 @@ export function TrendChartsSection({ hideHeader = false }: TrendChartsSectionPro
           timeRange={timeRange}
           onTimeRangeChange={setTimeRange}
           referenceBand={{ lower: 60, upper: 100, label: 'Normal range' }}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
         />
         <TrendChart
           title="Medication Adherence"
@@ -53,8 +48,6 @@ export function TrendChartsSection({ hideHeader = false }: TrendChartsSectionPro
           timeRange={timeRange}
           onTimeRangeChange={setTimeRange}
           referenceBand={{ lower: 80, upper: 100, label: 'Target ≥80%' }}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
         />
       </div>
     </div>

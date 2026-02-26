@@ -22,23 +22,7 @@ interface TrendChartProps {
   onTimeRangeChange: (range: 7 | 14 | 30) => void
   referenceBand?: { lower: number; upper: number; label: string }
   referenceLines?: { value: number; label: string; color?: string }[]
-  viewMode?: 'daily' | 'rolling_avg'
-  onViewModeChange?: (mode: 'daily' | 'rolling_avg') => void
   height?: number
-  showViewToggle?: boolean
-}
-
-function computeRollingAvg(data: TrendDataPoint[], window = 3): TrendDataPoint[] {
-  return data.map((point, i) => {
-    if (point.value === null) return point
-    const slice = data.slice(Math.max(0, i - window + 1), i + 1)
-    const validValues = slice.filter((d) => d.value !== null).map((d) => d.value as number)
-    if (validValues.length === 0) return { ...point, value: null }
-    return {
-      ...point,
-      value: Math.round((validValues.reduce((s, v) => s + v, 0) / validValues.length) * 10) / 10,
-    }
-  })
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -85,14 +69,12 @@ export function TrendChart({
   onTimeRangeChange,
   referenceBand,
   referenceLines = [],
-  viewMode = 'daily',
-  onViewModeChange,
   height = 220,
-  showViewToggle = true,
 }: TrendChartProps) {
-  const displayData = viewMode === 'rolling_avg' ? computeRollingAvg(data) : data
-  const hasHighlightedSegment =
-    viewMode === 'daily' && displayData.some((point) => point.highlightValue !== null && point.highlightValue !== undefined)
+  const displayData = data
+  const hasHighlightedSegment = displayData.some(
+    (point) => point.highlightValue !== null && point.highlightValue !== undefined
+  )
 
   // X-axis tick: show every Nth label based on range
   const tickInterval = timeRange === 7 ? 0 : timeRange === 14 ? 1 : 4
@@ -107,26 +89,6 @@ export function TrendChart({
         </div>
 
         <div className="flex items-center gap-2">
-          {/* View mode toggle */}
-          {showViewToggle && onViewModeChange && (
-            <div className="flex items-center gap-1 bg-slate-100 rounded-full p-0.5">
-              {(['daily', 'rolling_avg'] as const).map((mode) => (
-                <button
-                  key={mode}
-                  onClick={() => onViewModeChange(mode)}
-                  className={cn(
-                    'px-2 py-0.5 rounded-full text-xs font-medium transition-all',
-                    viewMode === mode
-                      ? 'bg-white text-slate-800 shadow-sm'
-                      : 'text-slate-500 hover:text-slate-700'
-                  )}
-                >
-                  {mode === 'daily' ? 'Daily' : '3-day avg'}
-                </button>
-              ))}
-            </div>
-          )}
-
           {/* Time range toggle */}
           <div className="flex items-center gap-1 bg-slate-100 rounded-full p-0.5">
             {([7, 14, 30] as const).map((range) => (

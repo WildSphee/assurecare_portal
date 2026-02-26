@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Bot, Loader2, MessageCircle, Send, X } from 'lucide-react'
+import { Loader2, Send, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { usePatient } from '@/hooks/usePatient'
@@ -18,7 +18,6 @@ interface ChatMessage {
 }
 
 const CAREGIVER_DEFAULT_PATIENT_ID = 'patient-001'
-const DEFAULT_MODEL = 'gpt-4.1-mini'
 const CHAT_WIDGET_EVENT = 'assurecare:chat-widget'
 
 type ChatWidgetEventDetail = {
@@ -35,198 +34,47 @@ function createMessage(role: ChatRole, content: string, isError = false): ChatMe
   }
 }
 
-function truncate(text: string, max = 220): string {
-  if (text.length <= max) return text
-  return `${text.slice(0, max - 1)}…`
+function buildMsTanMockReply(msTanData: ReturnType<typeof usePatient>): string {
+  const patientName = msTanData.patient?.name ?? 'Ms. Tan'
+  const vitals = msTanData.latestVitals
+  const symptom = msTanData.patientSymptoms[0]
+  const symptomsLabel = symptom
+    ? `${symptom.symptomType} (${symptom.severity})`
+    : 'No new symptom logged'
+  const vitalsLabel = vitals
+    ? `BP ${vitals.bpSystolic}/${vitals.bpDiastolic}, HR ${vitals.hrBpm}`
+    : 'Vitals not available'
+
+  const statusLines = [
+    `${patientName} today: mild heartache reported; currently engaged and being monitored.`,
+    `Latest check: ${vitalsLabel}.`,
+    `Most recent symptom: ${symptomsLabel}.`,
+  ]
+
+  const recommendedActions = [
+    'Call Ms. Tan now to check pain severity, duration, and any worsening symptoms.',
+    'Update Dr. Chan today for same-day symptom review.',
+    'If chest pain worsens or breathing difficulty starts, seek urgent/emergency care immediately.',
+  ]
+
+  return [
+    ...statusLines,
+    '',
+    'What to do now:',
+    ...recommendedActions.map((action, index) => `${index + 1}. ${action}`),
+  ].join('\n')
 }
 
-function buildPatientContext(params: {
-  patient: ReturnType<typeof usePatient>['patient']
-  latestVitals: ReturnType<typeof usePatient>['latestVitals']
-  todayAdherence: ReturnType<typeof usePatient>['todayAdherence']
-  activeAlerts: ReturnType<typeof usePatient>['activeAlerts']
-  patientSymptoms: ReturnType<typeof usePatient>['patientSymptoms']
-  dailySummary: ReturnType<typeof usePatient>['dailySummary']
-  clinicalSummary: ReturnType<typeof usePatient>['clinicalSummary']
-  patientDoctorNotes: ReturnType<typeof usePatient>['patientDoctorNotes']
-  patientCaregiverNotes: ReturnType<typeof usePatient>['patientCaregiverNotes']
-  patientCarePlan: ReturnType<typeof usePatient>['patientCarePlan']
-  nextAppointment: ReturnType<typeof usePatient>['nextAppointment']
-}) {
-  const {
-    patient,
-    latestVitals,
-    todayAdherence,
-    activeAlerts,
-    patientSymptoms,
-    dailySummary,
-    clinicalSummary,
-    patientDoctorNotes,
-    patientCaregiverNotes,
-    patientCarePlan,
-    nextAppointment,
-  } = params
-
-  if (!patient) return null
-
-  return {
-    patient: {
-      id: patient.id,
-      name: patient.name,
-      age: patient.age,
-      conditions: patient.conditions,
-      riskStatus: patient.riskStatus,
-      area: patient.location?.area ?? null,
-      lastCheckinAt: patient.lastCheckinAt,
-      noResponseStreak: patient.noResponseStreak,
-    },
-    latestVitals: latestVitals
-      ? {
-          date: latestVitals.date,
-          recordedAt: latestVitals.recordedAt,
-          bpSystolic: latestVitals.bpSystolic,
-          bpDiastolic: latestVitals.bpDiastolic,
-          hrBpm: latestVitals.hrBpm,
-          qualityFlag: latestVitals.qualityFlag,
-        }
-      : null,
-    todayAdherence,
-    activeAlerts: activeAlerts.slice(0, 3).map((alert) => ({
-      severity: alert.severity,
-      reasonCodes: alert.reasonCodes,
-      createdAt: alert.createdAt,
-      evidence: alert.evidencePointers.slice(0, 3),
-    })),
-    recentSymptoms: patientSymptoms.slice(0, 5).map((symptom) => ({
-      date: symptom.date,
-      symptomType: symptom.symptomType,
-      severity: symptom.severity,
-    })),
-    dailySummary: dailySummary
-      ? {
-          date: dailySummary.date,
-          narrative: truncate(dailySummary.narrative, 500),
-          highlights: dailySummary.highlights,
-          suggestedActions: dailySummary.suggestedActions,
-        }
-      : null,
-    clinicalSummary: clinicalSummary
-      ? {
-          date: clinicalSummary.date,
-          narrative: truncate(clinicalSummary.narrative, 500),
-          highlights: clinicalSummary.highlights,
-          suggestedActions: clinicalSummary.suggestedActions,
-        }
-      : null,
-    recentDoctorNotes: patientDoctorNotes.slice(0, 3).map((note) => ({
-      createdAt: note.createdAt,
-      visibility: note.visibility,
-      content: truncate(note.content),
-    })),
-    recentCaregiverNotes: patientCaregiverNotes.slice(0, 3).map((note) => ({
-      createdAt: note.createdAt,
-      content: truncate(note.content),
-    })),
-    carePlan: patientCarePlan.slice(0, 8).map((item) => ({
-      description: item.description,
-      frequency: item.frequency,
-      isCompleted: item.isCompleted ?? null,
-    })),
-    nextAppointment: nextAppointment
-      ? {
-          status: nextAppointment.status,
-          reason: nextAppointment.reason,
-          requestedAt: nextAppointment.requestedAt,
-          scheduledAt: nextAppointment.scheduledAt ?? null,
-          notes: truncate(nextAppointment.notes, 180),
-        }
-      : null,
-  }
-}
-
-function extractResponseText(data: unknown): string | null {
-  if (!data || typeof data !== 'object') return null
-
-  const root = data as Record<string, unknown>
-  if (typeof root.output_text === 'string' && root.output_text.trim()) {
-    return root.output_text.trim()
-  }
-
-  if (Array.isArray(root.output)) {
-    const parts: string[] = []
-
-    for (const item of root.output) {
-      if (!item || typeof item !== 'object') continue
-      const outputItem = item as Record<string, unknown>
-      if (!Array.isArray(outputItem.content)) continue
-
-      for (const content of outputItem.content) {
-        if (!content || typeof content !== 'object') continue
-        const contentItem = content as Record<string, unknown>
-        if (typeof contentItem.text === 'string' && contentItem.text.trim()) {
-          parts.push(contentItem.text.trim())
-        }
-      }
-    }
-
-    if (parts.length > 0) return parts.join('\n\n')
-  }
-
-  if (Array.isArray(root.choices)) {
-    const firstChoice = root.choices[0]
-    if (firstChoice && typeof firstChoice === 'object') {
-      const choice = firstChoice as Record<string, unknown>
-      const message = choice.message
-      if (message && typeof message === 'object') {
-        const msg = message as Record<string, unknown>
-        if (typeof msg.content === 'string' && msg.content.trim()) {
-          return msg.content.trim()
-        }
-      }
-    }
-  }
-
-  return null
-}
-
-function extractApiError(data: unknown): string | null {
-  if (!data || typeof data !== 'object') return null
-  const root = data as Record<string, unknown>
-  const error = root.error
-  if (!error || typeof error !== 'object') return null
-  const message = (error as Record<string, unknown>).message
-  return typeof message === 'string' ? message : null
-}
-
-function buildWelcomeMessage(patientName?: string, reason?: 'missing_key' | 'no_patient'): ChatMessage {
-  if (reason === 'missing_key') {
-    return createMessage(
-      'assistant',
-      'Set `VITE_OPENAI_API_KEY` in `assurecare-portal/.env` and restart the app to enable patient Q&A.',
-      true
-    )
-  }
-
-  if (reason === 'no_patient') {
-    return createMessage(
-      'assistant',
-      'Select a patient first, then ask questions here about their current status, recent alerts, and care plan.',
-      true
-    )
-  }
-
+function buildWelcomeMessage(): ChatMessage {
   return createMessage(
     'assistant',
-    `Hi, I can help explain ${patientName ?? 'the patient'}'s portal data. Ask about recent alerts, vitals, symptoms, adherence, or the care plan.`
+    "Mock chat mode is enabled. Whatever you ask, I'll reply with Ms. Tan's today's status and recommended action."
   )
 }
 
 export function CaregiverChatWidget() {
   const { activeRole, selectedPatientId } = useUIStore()
   const patients = usePatientStore((state) => state.patients)
-
-  const apiKey = import.meta.env.VITE_OPENAI_API_KEY?.trim()
-  const model = import.meta.env.VITE_OPENAI_MODEL?.trim() || DEFAULT_MODEL
 
   const resolvedPatientId = useMemo(() => {
     if (selectedPatientId) return selectedPatientId
@@ -237,7 +85,7 @@ export function CaregiverChatWidget() {
   }, [activeRole, patients, selectedPatientId])
 
   const patientData = usePatient(resolvedPatientId ?? '')
-  const patientContext = useMemo(() => buildPatientContext(patientData), [patientData])
+  const msTanData = usePatient(CAREGIVER_DEFAULT_PATIENT_ID)
   const patientName = patientData.patient?.name
 
   const [isOpen, setIsOpen] = useState(false)
@@ -245,22 +93,9 @@ export function CaregiverChatWidget() {
   const [draft, setDraft] = useState('')
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const scrollRef = useRef<HTMLDivElement | null>(null)
-
-  const hasPatientContext = Boolean(patientContext)
-
   useEffect(() => {
-    if (!apiKey) {
-      setMessages([buildWelcomeMessage(undefined, 'missing_key')])
-      return
-    }
-
-    if (!hasPatientContext) {
-      setMessages([buildWelcomeMessage(undefined, 'no_patient')])
-      return
-    }
-
-    setMessages([buildWelcomeMessage(patientName)])
-  }, [apiKey, hasPatientContext, patientName, resolvedPatientId])
+    setMessages([buildWelcomeMessage()])
+  }, [])
 
   useEffect(() => {
     if (!isOpen) return
@@ -283,75 +118,27 @@ export function CaregiverChatWidget() {
     return () => window.removeEventListener(CHAT_WIDGET_EVENT, handleChatWidgetEvent as EventListener)
   }, [])
 
-  const canSend = Boolean(apiKey && patientContext && draft.trim() && !isSending)
+  const canSend = Boolean(draft.trim() && !isSending)
 
   async function handleSend() {
     const question = draft.trim()
-    if (!question || !apiKey || !patientContext || isSending) return
+    if (!question || isSending) return
 
     const userMessage = createMessage('user', question)
-    const currentMessages = [...messages, userMessage]
-
     setDraft('')
-    setMessages(currentMessages)
+    setMessages((prev) => [...prev, userMessage])
     setIsSending(true)
 
-    const convoTranscript = currentMessages
-      .slice(-8)
-      .map((message) => `${message.role.toUpperCase()}: ${message.content}`)
-      .join('\n')
-
-    const prompt = [
-      'You are a caregiver support assistant inside AssureCare.',
-      'Use only the patient context provided below and the conversation transcript.',
-      'Be clear and practical for a caregiver. Do not invent facts.',
-      'Reply in the same language as the user’s latest message (English to English, Chinese to Chinese). If mixed, prioritize the language used in the latest question.',
-      'If the answer is not in the provided data, say so explicitly.',
-      'You may summarize trends and explain possible significance, but do not diagnose.',
-      'If there are severe symptoms, red alerts, or urgent concerns, advise contacting the doctor or emergency services as appropriate.',
-      '',
-      'PATIENT CONTEXT (JSON)',
-      JSON.stringify(patientContext, null, 2),
-      '',
-      'CONVERSATION',
-      convoTranscript,
-      '',
-      `Latest caregiver question: ${question}`,
-    ].join('\n')
-
     try {
-      const response = await fetch('https://api.openai.com/v1/responses', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model,
-          input: prompt,
-        }),
-      })
-
-      const data = (await response.json()) as unknown
-      const apiError = extractApiError(data)
-
-      if (!response.ok) {
-        throw new Error(apiError || `OpenAI request failed (${response.status})`)
-      }
-
-      const text = extractResponseText(data)
-      if (!text) {
-        throw new Error('No text response returned by the model.')
-      }
-
-      setMessages((prev) => [...prev, createMessage('assistant', text)])
+      await new Promise((resolve) => window.setTimeout(resolve, 3000))
+      setMessages((prev) => [...prev, createMessage('assistant', buildMsTanMockReply(msTanData))])
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error while contacting OpenAI.'
+      const message = error instanceof Error ? error.message : 'Unknown error while generating mock response.'
       setMessages((prev) => [
         ...prev,
         createMessage(
           'assistant',
-          `I couldn’t answer right now. ${message}. Please try again.`,
+          `I couldn’t return the mock response right now. ${message}. Please try again.`,
           true
         ),
       ])
@@ -367,7 +154,11 @@ export function CaregiverChatWidget() {
           <div className="flex items-start justify-between gap-3 border-b border-slate-200 px-4 py-3">
             <div className="min-w-0">
               <p className="text-sm font-semibold text-slate-900 flex items-center gap-2">
-                <Bot className="h-4 w-4 text-primary" />
+                <img
+                  src="/images/bot.png"
+                  alt="Chatbot"
+                  className="h-4 w-4 rounded-sm object-contain"
+                />
                 Caregiver Assistant
               </p>
               <p className="truncate text-xs text-slate-500">
@@ -427,7 +218,7 @@ export function CaregiverChatWidget() {
               <div className="flex justify-start">
                 <div className="inline-flex items-center gap-2 rounded-2xl rounded-bl-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Thinking...
+                  Reloading...
                 </div>
               </div>
             )}
@@ -444,21 +235,14 @@ export function CaregiverChatWidget() {
                 }
               }}
               placeholder={
-                apiKey
-                  ? patientContext
-                    ? 'Ask about alerts, vitals, symptoms, or care plan...'
-                    : 'Select a patient to start...'
-                  : 'Add VITE_OPENAI_API_KEY to .env to enable chat...'
+                'Ask me anything...'
               }
               className="min-h-[72px] max-h-36 resize-y bg-white"
-              disabled={!apiKey || !patientContext || isSending}
+              disabled={isSending}
               aria-label="Chat message"
             />
 
             <div className="flex items-center justify-between gap-3">
-              <p className="text-[11px] text-slate-400">
-                Uses current portal data for the active patient.
-              </p>
               <Button
                 type="button"
                 size="sm"
@@ -480,7 +264,15 @@ export function CaregiverChatWidget() {
           className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[70] h-14 w-14 rounded-full bg-primary text-white shadow-lg ring-4 ring-blue-100 transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           aria-label={isOpen ? 'Close caregiver assistant chat' : 'Open caregiver assistant chat'}
         >
-          {isOpen ? <X className="mx-auto h-6 w-6" /> : <MessageCircle className="mx-auto h-6 w-6" />}
+          {isOpen ? (
+            <X className="mx-auto h-6 w-6" />
+          ) : (
+            <img
+              src="/images/bot.png"
+              alt=""
+              className="h-full w-full rounded-full object-cover"
+            />
+          )}
         </button>
       )}
     </>
