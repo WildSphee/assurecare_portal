@@ -2,7 +2,7 @@ import type { SymptomSignal } from '@/types'
 
 export const MOCK_SYMPTOMS: SymptomSignal[] = [
   // Ms. Tan
-  { id: 'sym-001', patientId: 'patient-001', date: '2026-02-24', symptomType: 'Dizziness', severity: 'moderate', source: 'chatbot' },
+  { id: 'sym-001', patientId: 'patient-001', date: '2026-02-25', symptomType: 'Heartache', severity: 'mild', source: 'chatbot' },
   { id: 'sym-002', patientId: 'patient-001', date: '2026-02-21', symptomType: 'Dizziness', severity: 'mild', source: 'chatbot' },
   { id: 'sym-003', patientId: 'patient-001', date: '2026-02-18', symptomType: 'Mild headache', severity: 'mild', source: 'chatbot' },
   // Mr. Lim (red)

@@ -14,8 +14,7 @@ function recordedAt(daysAgo: number, hour = 9): string {
   return dt.toISOString()
 }
 
-// Ms. Tan: BP rising from 130→148 systolic over 10 days (Feb 15-24)
-// Days 10..1 ago = Feb 15..24, day 0 = Feb 25
+// Ms. Tan: vitals currently within normal range
 const msTanVitals: Omit<VitalsRecord, 'id'>[] = [
   // 30 days ago
   { patientId: 'patient-001', date: d(30), recordedAt: recordedAt(30), bpSystolic: 128, bpDiastolic: 80, hrBpm: 74, source: 'chatbot', qualityFlag: 'normal' },
@@ -38,17 +37,17 @@ const msTanVitals: Omit<VitalsRecord, 'id'>[] = [
   { patientId: 'patient-001', date: d(13), recordedAt: recordedAt(13), bpSystolic: 139, bpDiastolic: 88, hrBpm: 83, source: 'chatbot', qualityFlag: 'normal' },
   { patientId: 'patient-001', date: d(12), recordedAt: recordedAt(12), bpSystolic: 140, bpDiastolic: 89, hrBpm: 84, source: 'chatbot', qualityFlag: 'normal' },
   { patientId: 'patient-001', date: d(11), recordedAt: recordedAt(11), bpSystolic: 142, bpDiastolic: 90, hrBpm: 84, source: 'chatbot', qualityFlag: 'normal' },
-  { patientId: 'patient-001', date: d(10), recordedAt: recordedAt(10), bpSystolic: 143, bpDiastolic: 91, hrBpm: 85, source: 'chatbot', qualityFlag: 'normal' },
-  { patientId: 'patient-001', date: d(9), recordedAt: recordedAt(9), bpSystolic: 144, bpDiastolic: 91, hrBpm: 85, source: 'chatbot', qualityFlag: 'normal' },
-  { patientId: 'patient-001', date: d(8), recordedAt: recordedAt(8), bpSystolic: 145, bpDiastolic: 92, hrBpm: 86, source: 'chatbot', qualityFlag: 'normal' },
-  { patientId: 'patient-001', date: d(7), recordedAt: recordedAt(7), bpSystolic: 145, bpDiastolic: 92, hrBpm: 86, source: 'chatbot', qualityFlag: 'normal' },
-  { patientId: 'patient-001', date: d(6), recordedAt: recordedAt(6), bpSystolic: 146, bpDiastolic: 93, hrBpm: 87, source: 'chatbot', qualityFlag: 'normal' },
-  { patientId: 'patient-001', date: d(5), recordedAt: recordedAt(5), bpSystolic: 146, bpDiastolic: 93, hrBpm: 87, source: 'chatbot', qualityFlag: 'normal' },
-  { patientId: 'patient-001', date: d(4), recordedAt: recordedAt(4), bpSystolic: 147, bpDiastolic: 93, hrBpm: 87, source: 'chatbot', qualityFlag: 'normal' },
-  { patientId: 'patient-001', date: d(3), recordedAt: recordedAt(3), bpSystolic: 147, bpDiastolic: 94, hrBpm: 88, source: 'chatbot', qualityFlag: 'normal' },
-  { patientId: 'patient-001', date: d(2), recordedAt: recordedAt(2), bpSystolic: 148, bpDiastolic: 94, hrBpm: 88, source: 'chatbot', qualityFlag: 'normal' },
-  { patientId: 'patient-001', date: d(1), recordedAt: recordedAt(1), bpSystolic: 148, bpDiastolic: 92, hrBpm: 87, source: 'chatbot', qualityFlag: 'normal' },
-  { patientId: 'patient-001', date: d(0), recordedAt: recordedAt(0), bpSystolic: 148, bpDiastolic: 92, hrBpm: 82, source: 'chatbot', qualityFlag: 'normal' },
+  { patientId: 'patient-001', date: d(10), recordedAt: recordedAt(10), bpSystolic: 132, bpDiastolic: 84, hrBpm: 79, source: 'chatbot', qualityFlag: 'normal' },
+  { patientId: 'patient-001', date: d(9), recordedAt: recordedAt(9), bpSystolic: 131, bpDiastolic: 83, hrBpm: 78, source: 'chatbot', qualityFlag: 'normal' },
+  { patientId: 'patient-001', date: d(8), recordedAt: recordedAt(8), bpSystolic: 129, bpDiastolic: 82, hrBpm: 77, source: 'chatbot', qualityFlag: 'normal' },
+  { patientId: 'patient-001', date: d(7), recordedAt: recordedAt(7), bpSystolic: 130, bpDiastolic: 82, hrBpm: 77, source: 'chatbot', qualityFlag: 'normal' },
+  { patientId: 'patient-001', date: d(6), recordedAt: recordedAt(6), bpSystolic: 128, bpDiastolic: 81, hrBpm: 76, source: 'chatbot', qualityFlag: 'normal' },
+  { patientId: 'patient-001', date: d(5), recordedAt: recordedAt(5), bpSystolic: 129, bpDiastolic: 82, hrBpm: 77, source: 'chatbot', qualityFlag: 'normal' },
+  { patientId: 'patient-001', date: d(4), recordedAt: recordedAt(4), bpSystolic: 127, bpDiastolic: 80, hrBpm: 75, source: 'chatbot', qualityFlag: 'normal' },
+  { patientId: 'patient-001', date: d(3), recordedAt: recordedAt(3), bpSystolic: 126, bpDiastolic: 80, hrBpm: 75, source: 'chatbot', qualityFlag: 'normal' },
+  { patientId: 'patient-001', date: d(2), recordedAt: recordedAt(2), bpSystolic: 127, bpDiastolic: 81, hrBpm: 76, source: 'chatbot', qualityFlag: 'normal' },
+  { patientId: 'patient-001', date: d(1), recordedAt: recordedAt(1), bpSystolic: 128, bpDiastolic: 81, hrBpm: 77, source: 'chatbot', qualityFlag: 'normal' },
+  { patientId: 'patient-001', date: d(0), recordedAt: recordedAt(0), bpSystolic: 126, bpDiastolic: 80, hrBpm: 76, source: 'chatbot', qualityFlag: 'normal' },
 ]
 
 // Mr. Lim: elevated BP, more severe

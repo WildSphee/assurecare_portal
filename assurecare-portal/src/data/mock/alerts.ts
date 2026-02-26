@@ -6,17 +6,17 @@ export const MOCK_ALERTS: Alert[] = [
     id: 'alert-001',
     patientId: 'patient-001',
     severity: 'yellow',
-    reasonCodes: ['BP_UPTREND_5D', 'MISSED_MEDS_STREAK_2'],
+    reasonCodes: ['MISSED_MEDS_STREAK_2'],
     evidencePointers: [
-      {
-        description: 'BP has increased from 130 to 148 mmHg (systolic) over the past 10 days',
-        dates: ['2026-02-15', '2026-02-18', '2026-02-20', '2026-02-22', '2026-02-24', '2026-02-25'],
-        metric: 'bp_systolic',
-      },
       {
         description: 'Evening medication missed on Feb 23 and Feb 24 (2-day streak)',
         dates: ['2026-02-23', '2026-02-24'],
         metric: 'medsEveningTaken',
+      },
+      {
+        description: 'Mild heartache reported this afternoon; latest BP/HR remain within usual range',
+        dates: ['2026-02-25'],
+        metric: 'symptom',
       },
     ],
     createdAt: '2026-02-25T09:10:00Z',

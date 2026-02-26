@@ -37,12 +37,22 @@ export function PatientCard({
     ? REASON_CODE_LABELS[latestAlert.reasonCodes[0]]
     : null
   const topSymptom = activeSymptoms[0]
+  const prioritizedSymptom =
+    activeSymptoms.find((symptom) => /chest|heart|shortness/i.test(symptom.symptomType)) ?? topSymptom
 
   let primaryIssue = 'Stable check-in, no active issue flagged'
   let issueMeta: string | null = null
   let issueToneClass = 'bg-slate-50 text-slate-900 border border-slate-200'
 
-  if (topReasonLabel) {
+  const shouldPrioritizeSymptom =
+    Boolean(prioritizedSymptom) &&
+    (!topReasonLabel || /medication missed|blood pressure trending|heart rate trending/i.test(topReasonLabel))
+
+  if (shouldPrioritizeSymptom && prioritizedSymptom) {
+    primaryIssue = `${prioritizedSymptom.symptomType} (${prioritizedSymptom.severity})`
+    issueMeta = activeSymptoms.length > 1 ? `+${activeSymptoms.length - 1} more reported symptom(s)` : null
+    issueToneClass = 'bg-slate-50 text-slate-900 border border-slate-200'
+  } else if (topReasonLabel) {
     primaryIssue = topReasonLabel
     issueMeta =
       latestAlert && latestAlert.reasonCodes.length > 1
@@ -63,7 +73,7 @@ export function PatientCard({
     issueToneClass = 'bg-slate-50 text-slate-900 border border-slate-200'
   }
 
-  const highlightIssue = /chest|shortness|severe/i.test(primaryIssue)
+  const highlightIssue = /chest|heart|shortness|severe/i.test(primaryIssue)
   const adherenceSummary = adherenceLast7Days.reduce(
     (acc, dot) => {
       if (dot.status === 'taken') acc.taken += 1
