@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { usePatient } from '@/hooks/usePatient'
 import { usePatientStore } from '@/store/usePatientStore'
@@ -58,11 +58,11 @@ export function EscalationPanel({ open, onClose }: EscalationPanelProps) {
 
   return (
     <>
-      <Sheet open={open} onOpenChange={onClose}>
-        <SheetContent className="w-full sm:max-w-md overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle>Escalation & Appointments</SheetTitle>
-          </SheetHeader>
+      <Dialog open={open} onOpenChange={(nextOpen) => !nextOpen && onClose()}>
+        <DialogContent className="w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] sm:max-w-[560px] max-h-[85vh] overflow-y-auto rounded-2xl border border-slate-200 shadow-2xl">
+          <DialogHeader>
+            <DialogTitle>Escalation & Appointments</DialogTitle>
+          </DialogHeader>
 
           {/* Tab switcher */}
           <div className="flex items-center gap-1 bg-slate-100 rounded-full p-0.5 mt-4 mb-5">
@@ -178,8 +178,8 @@ export function EscalationPanel({ open, onClose }: EscalationPanelProps) {
               )}
             </div>
           )}
-        </SheetContent>
-      </Sheet>
+        </DialogContent>
+      </Dialog>
 
       <AppointmentRequestForm
         open={apptFormOpen}

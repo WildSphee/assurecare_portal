@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -40,6 +40,17 @@ const TIME_WINDOWS = [
   'Weekend morning (9am–12pm)',
 ]
 
+const DEFAULT_REASON: AppointmentReason = 'symptom_check'
+const DEFAULT_TIME_WINDOWS = ['Morning weekdays (8am–12pm)']
+
+function buildPrefilledNotes(aiSummarySnippet: string): string {
+  const aiLine = aiSummarySnippet.trim()
+  const base =
+    'AI prefilled draft: Request same-day review for mild heartache reported today despite currently stable vitals. Please assess symptom characteristics and advise next steps.'
+
+  return aiLine ? `${base}\n\nContext: ${aiLine}` : base
+}
+
 export function AppointmentRequestForm({
   open,
   onClose,
@@ -48,14 +59,20 @@ export function AppointmentRequestForm({
   requesterId = 'user-ana',
   requesterRole = 'caregiver',
 }: AppointmentRequestFormProps) {
-  const [reason, setReason] = useState<AppointmentReason | ''>('')
-  const [selectedWindows, setSelectedWindows] = useState<string[]>([])
-  const [notes, setNotes] = useState(aiSummarySnippet)
-  const [includeAI, setIncludeAI] = useState(true)
+  const [reason, setReason] = useState<AppointmentReason | ''>(DEFAULT_REASON)
+  const [selectedWindows, setSelectedWindows] = useState<string[]>(DEFAULT_TIME_WINDOWS)
+  const [notes, setNotes] = useState(buildPrefilledNotes(aiSummarySnippet))
   const { requestAppointment } = useAppointmentStore()
   const { logAction } = useActionLogStore()
 
   const canSubmit = reason !== ''
+
+  useEffect(() => {
+    if (!open) return
+    setReason(DEFAULT_REASON)
+    setSelectedWindows(DEFAULT_TIME_WINDOWS)
+    setNotes(buildPrefilledNotes(aiSummarySnippet))
+  }, [open, aiSummarySnippet])
 
   const toggleWindow = (w: string) => {
     setSelectedWindows((prev) =>
@@ -74,15 +91,15 @@ export function AppointmentRequestForm({
       preferredWindows: selectedWindows,
       reason: reason as AppointmentReason,
       notes,
-      aiSummarySnippet: includeAI ? aiSummarySnippet : undefined,
+      aiSummarySnippet: aiSummarySnippet || undefined,
       initiatedBy: requesterId,
     })
     logAction(requesterId, requesterRole, patientId, 'appointment_requested', { appointmentId: id, reason })
     toast.success('Appointment request sent to Dr. Chan\'s clinic')
     onClose()
-    setReason('')
-    setSelectedWindows([])
-    setNotes(aiSummarySnippet)
+    setReason(DEFAULT_REASON)
+    setSelectedWindows(DEFAULT_TIME_WINDOWS)
+    setNotes(buildPrefilledNotes(aiSummarySnippet))
   }
 
   return (
@@ -127,22 +144,7 @@ export function AppointmentRequestForm({
           </div>
 
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label>Additional notes</Label>
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  id="include-ai"
-                  checked={includeAI}
-                  onCheckedChange={(v) => {
-                    setIncludeAI(!!v)
-                    setNotes(v ? aiSummarySnippet : '')
-                  }}
-                />
-                <label htmlFor="include-ai" className="text-xs text-slate-500 cursor-pointer">
-                  Include AI summary
-                </label>
-              </div>
-            </div>
+            <Label>Additional notes</Label>
             <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}

@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useUIStore } from '@/store/useUIStore'
 import { usePatient } from '@/hooks/usePatient'
@@ -124,17 +124,16 @@ export function DrillDownPanel() {
   const isOpen = selectedPatientId !== null
 
   return (
-    <Sheet open={isOpen} onOpenChange={(open) => !open && setSelectedPatient(null)}>
-      <SheetContent
-        side="right"
-        className="!inset-y-auto !top-[4.5rem] !right-2 !bottom-2 !h-auto !w-[calc(100vw-1rem)] sm:!top-20 sm:!right-6 sm:!bottom-6 sm:!w-[680px] sm:!max-w-none p-0 flex flex-col rounded-2xl border border-slate-200 shadow-2xl overflow-hidden"
+    <Dialog open={isOpen} onOpenChange={(open) => !open && setSelectedPatient(null)}>
+      <DialogContent
+        className="w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] sm:max-w-[760px] h-[calc(100vh-1rem)] sm:h-[82vh] p-0 flex flex-col rounded-2xl border border-slate-200 shadow-2xl overflow-hidden"
         aria-label="Patient details window"
       >
-        <SheetHeader className="sr-only">
-          <SheetTitle>Patient Details</SheetTitle>
-        </SheetHeader>
+        <DialogHeader className="sr-only">
+          <DialogTitle>Patient Details</DialogTitle>
+        </DialogHeader>
         {selectedPatientId && <DrillDownContent patientId={selectedPatientId} />}
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   )
 }
