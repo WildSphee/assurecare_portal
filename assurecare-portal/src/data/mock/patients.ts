@@ -80,7 +80,7 @@ export const MOCK_PATIENTS: Patient[] = [
     conditions: ['Heart failure', 'Hypertension'],
     doctorId: 'user-dr-chan',
     caregiverIds: [],
-    location: { lat: 1.3166, lng: 103.8927, area: 'Bedok, Singapore' },
+    location: { lat: 1.3166, lng: 103.8927, area: 'Bedok East, Singapore' },
     riskStatus: 'green',
     lastCheckinAt: '2026-02-22T09:00:00Z',
     noResponseStreak: 3,

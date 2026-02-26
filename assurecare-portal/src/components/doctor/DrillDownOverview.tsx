@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Calendar, Phone, Mail, User, MessageSquare } from 'lucide-react'
+import { Calendar, Phone, Mail, User, MessageSquare, MapPin } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatDate, formatRelative } from '@/lib/dateUtils'
 import { usePatient } from '@/hooks/usePatient'
@@ -36,6 +36,16 @@ export function DrillDownOverview({ patientId }: { patientId: string }) {
 
   return (
     <div className="space-y-5">
+      {patient.location?.area && (
+        <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2">
+          <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Location</p>
+            <p className="text-sm text-slate-700 truncate">{patient.location.area}</p>
+          </div>
+        </div>
+      )}
+
       {/* Vitals snapshot */}
       {latestVitals ? (
         <div className="bg-slate-50 rounded-lg p-4">

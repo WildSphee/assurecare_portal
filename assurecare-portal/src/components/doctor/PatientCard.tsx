@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils'
 import { REASON_CODE_LABELS } from '@/lib/reasonCodes'
 import type { Patient, VitalsRecord, Alert, SymptomSignal } from '@/types'
-import { Calendar, AlertTriangle, Pill, Activity, MoreHorizontal, CheckSquare, MessageSquare } from 'lucide-react'
+import { Calendar, AlertTriangle, Pill, Activity, MoreHorizontal, CheckSquare, MessageSquare, MapPin } from 'lucide-react'
 
 interface AdherenceDot {
   status: 'taken' | 'missed' | 'no_data'
@@ -93,6 +93,12 @@ export function PatientCard({
               Age {patient.age} · {patient.conditions.slice(0, 2).join(' · ')}
             </p>
           </div>
+          {patient.location?.area && (
+            <div className="shrink-0 inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] text-slate-600">
+              <MapPin className="w-3 h-3 text-slate-400" />
+              <span className="max-w-[120px] truncate">{patient.location.area}</span>
+            </div>
+          )}
         </div>
 
         <div className={cn('rounded-xl px-3 py-3', issueToneClass)}>
