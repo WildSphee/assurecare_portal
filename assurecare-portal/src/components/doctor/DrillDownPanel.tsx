@@ -9,7 +9,6 @@ import { DrillDownOverview } from './DrillDownOverview'
 import { DrillDownCharts } from './DrillDownCharts'
 import { DrillDownTimeline } from './DrillDownTimeline'
 import { DoctorNotesEditor } from './DoctorNotesEditor'
-import { MapPin } from 'lucide-react'
 import { formatRelative } from '@/lib/dateUtils'
 
 function DrillDownContent({ patientId }: { patientId: string }) {
@@ -37,14 +36,6 @@ function DrillDownContent({ patientId }: { patientId: string }) {
             <p className="text-xs text-slate-500 mt-0.5 truncate">
               Age {patient.age} · {patient.conditions.slice(0, 2).join(' · ')}
             </p>
-          </div>
-          <div className="flex flex-col items-end gap-2 shrink-0">
-            {patient.location?.area && (
-              <div className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] text-slate-600 max-w-[220px]">
-                <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
-                <span className="truncate">{patient.location.area}</span>
-              </div>
-            )}
           </div>
         </div>
 

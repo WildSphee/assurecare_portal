@@ -7,6 +7,7 @@ export const REASON_CODE_LABELS: Record<ReasonCode, string> = {
   MISSED_MEDS_YESTERDAY: 'Medication missed yesterday',
   SYMPTOM_DIZZINESS_REPEAT: 'Dizziness reported (recurring)',
   SYMPTOM_HEARTACHE_MILD: 'Mild heartache reported',
+  ESCALATION_FROM_CAREGIVER: 'Escalation from caregiver',
   SYMPTOM_CHEST_TIGHTNESS_SEVERE: 'Severe chest tightness reported',
   SYMPTOM_SHORTNESS_OF_BREATH: 'Shortness of breath reported',
   NO_RESPONSE_STREAK_2: 'No check-in response for 2+ days',
@@ -26,6 +27,8 @@ export const REASON_CODE_DESCRIPTIONS: Record<ReasonCode, string> = {
     'Dizziness has been reported on multiple occasions recently. This may be related to blood pressure changes.',
   SYMPTOM_HEARTACHE_MILD:
     'Mild heartache has been reported. This is clinically important, especially with recent cardiac history, and should be reviewed promptly.',
+  ESCALATION_FROM_CAREGIVER:
+    'A caregiver has escalated this patient for clinician review via the portal, indicating concern that requires follow-up.',
   SYMPTOM_CHEST_TIGHTNESS_SEVERE:
     'Severe chest tightness has been reported, which may indicate a serious cardiovascular concern requiring prompt attention.',
   SYMPTOM_SHORTNESS_OF_BREATH:
@@ -43,6 +46,7 @@ export const REASON_CODE_WEIGHTS: Record<ReasonCode, number> = {
   MISSED_MEDS_YESTERDAY: 2,
   SYMPTOM_DIZZINESS_REPEAT: 2,
   SYMPTOM_HEARTACHE_MILD: 3,
+  ESCALATION_FROM_CAREGIVER: 2,
   SYMPTOM_CHEST_TIGHTNESS_SEVERE: 3,
   SYMPTOM_SHORTNESS_OF_BREATH: 2,
   NO_RESPONSE_STREAK_2: 2,

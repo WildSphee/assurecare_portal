@@ -6,7 +6,7 @@ export const MOCK_ALERTS: Alert[] = [
     id: 'alert-001',
     patientId: 'patient-001',
     severity: 'red',
-    reasonCodes: ['SYMPTOM_HEARTACHE_MILD', 'MISSED_MEDS_STREAK_2'],
+    reasonCodes: ['SYMPTOM_HEARTACHE_MILD', 'MISSED_MEDS_STREAK_2', 'ESCALATION_FROM_CAREGIVER'],
     evidencePointers: [
       {
         description: 'Evening medication missed on Feb 23 and Feb 24 (2-day streak)',
@@ -17,6 +17,11 @@ export const MOCK_ALERTS: Alert[] = [
         description: 'Mild heartache reported this afternoon; latest BP/HR remain within usual range',
         dates: ['2026-02-25'],
         metric: 'symptom',
+      },
+      {
+        description: 'Caregiver escalated via portal requesting medical review',
+        dates: ['2026-02-26'],
+        metric: 'escalation',
       },
     ],
     createdAt: '2026-02-25T09:10:00Z',
