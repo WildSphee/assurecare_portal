@@ -93,6 +93,7 @@ export function CaregiverChatWidget() {
   const [draft, setDraft] = useState('')
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const scrollRef = useRef<HTMLDivElement | null>(null)
+  const panelRef = useRef<HTMLDivElement | null>(null)
   useEffect(() => {
     setMessages([buildWelcomeMessage()])
   }, [])
@@ -103,6 +104,24 @@ export function CaregiverChatWidget() {
     if (!node) return
     node.scrollTop = node.scrollHeight
   }, [isOpen, messages, isSending])
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    const handlePointerDown = (event: MouseEvent | TouchEvent) => {
+      const target = event.target as Node | null
+      if (!target) return
+      if (panelRef.current?.contains(target)) return
+      setIsOpen(false)
+    }
+
+    document.addEventListener('mousedown', handlePointerDown)
+    document.addEventListener('touchstart', handlePointerDown)
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown)
+      document.removeEventListener('touchstart', handlePointerDown)
+    }
+  }, [isOpen])
 
   useEffect(() => {
     const handleChatWidgetEvent = (event: Event) => {
@@ -150,7 +169,10 @@ export function CaregiverChatWidget() {
   return (
     <>
       {isOpen && (
-        <div className="fixed bottom-24 right-4 sm:right-6 z-[70] w-[calc(100vw-2rem)] max-w-[420px] rounded-2xl border border-slate-200 bg-white shadow-2xl">
+        <div
+          ref={panelRef}
+          className="fixed bottom-24 right-4 sm:right-6 z-[70] w-[calc(100vw-2rem)] max-w-[420px] rounded-2xl border border-slate-200 bg-white shadow-2xl"
+        >
           <div className="flex items-start justify-between gap-3 border-b border-slate-200 px-4 py-3">
             <div className="min-w-0">
               <p className="text-sm font-semibold text-slate-900 flex items-center gap-2">
