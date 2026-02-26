@@ -52,7 +52,7 @@ export function EscalationPanel({ open, onClose }: EscalationPanelProps) {
       createdAt: new Date().toISOString(),
     })
     logAction('user-ana', 'caregiver', 'patient-001', 'escalation_created', { escalationId: id })
-    toast.success('Escalation sent to Dr. Chan')
+    toast.success('Escalation sent to the family doctor')
     setEscalating(false)
   }
 
@@ -63,7 +63,7 @@ export function EscalationPanel({ open, onClose }: EscalationPanelProps) {
           <DialogHeader>
             <DialogTitle>Escalation & Appointments</DialogTitle>
             <DialogDescription className="sr-only">
-              Manage appointment requests and caregiver escalations for Ms. Tan.
+              Manage appointment requests and caregiver escalations for Mrs Tan.
             </DialogDescription>
           </DialogHeader>
 
@@ -107,7 +107,7 @@ export function EscalationPanel({ open, onClose }: EscalationPanelProps) {
                 variant="outline"
               >
                 <Calendar className="w-4 h-4" />
-                Request Appointment with Dr. Chan
+                Request Appointment with Family Doctor
               </Button>
 
               {patientAppointments.length > 0 && (
@@ -140,9 +140,9 @@ export function EscalationPanel({ open, onClose }: EscalationPanelProps) {
           {activeTab === 'escalation' && (
             <div className="space-y-4">
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                <p className="text-sm font-semibold text-amber-800 mb-1.5">Escalate to Dr. Chan (Non-urgent)</p>
+                <p className="text-sm font-semibold text-amber-800 mb-1.5">Escalate to Family Doctor (Non-urgent)</p>
                 <p className="text-xs text-amber-700 mb-3">
-                  This will notify Dr. Chan that Ms. Tan needs attention. He will review and follow up within the next business day.
+                  This will notify the family doctor that Mrs Tan needs attention. He will review and follow up within the next business day.
                 </p>
                 <Button
                   onClick={handleEscalate}

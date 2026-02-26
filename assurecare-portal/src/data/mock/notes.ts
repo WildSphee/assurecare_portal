@@ -35,7 +35,7 @@ export const MOCK_CAREGIVER_NOTES: CaregiverNote[] = [
     id: 'cnote-002',
     patientId: 'patient-001',
     authorId: 'user-ana',
-    content: 'Visited over the weekend. BP machine at home showing 148/90 — will ask Dr. Chan about this at the appointment.',
+    content: 'Visited over the weekend. BP machine at home showing 148/90 — will ask the family doctor (Dr. Chan) about this at the appointment.',
     createdAt: '2026-02-22T20:00:00Z',
   },
 ]

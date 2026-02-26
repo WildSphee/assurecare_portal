@@ -1,7 +1,7 @@
 import type { Appointment } from '@/types'
 
 export const MOCK_APPOINTMENTS: Appointment[] = [
-  // Ms. Tan — scheduled
+  // Mrs Tan — scheduled
   {
     id: 'appt-001',
     patientId: 'patient-001',

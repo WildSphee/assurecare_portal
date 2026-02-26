@@ -53,7 +53,7 @@ export function BotInsightPanel() {
   const [daysBack, setDaysBack] = useState<7 | 14>(14)
   const { patient, dailySummary, patientMessages } = usePatient('patient-001')
   const events = useTimeline('patient-001', daysBack)
-  const patientShortName = patient ? patient.name.split(' ').slice(0, 2).join(' ') : 'Ms Tan'
+  const patientShortName = patient ? patient.name.split(' ').slice(0, 2).join(' ') : 'Mrs Tan'
 
   const transcript = useMemo<TranscriptEntry[]>(() => {
     const patientQuote =
@@ -74,7 +74,7 @@ export function BotInsightPanel() {
         id: 'bot-checkin-1',
         actor: 'bot',
         timestamp: getTodayIsoAtUtcTime('08:28:00'),
-        text: 'Good morning Ms Tan. Have you taken your blood pressure medicine today?',
+        text: 'Good morning Mrs Tan. Have you taken your blood pressure medicine today?',
       },
       {
         id: 'pt-checkin-1',
@@ -110,7 +110,7 @@ export function BotInsightPanel() {
         timestamp: message.sentAt,
         text:
           message.senderRole === 'doctor'
-            ? `Doctor message relayed: ${message.content}`
+            ? `Family doctor message relayed: ${message.content}`
             : `Caregiver message relayed: ${message.content}`,
       }))
 
@@ -211,7 +211,7 @@ export function BotInsightPanel() {
                     )}>
                       {entry.actor === 'patient' ? 'MT' : 'BOT'}
                     </span>
-                    <span>{entry.actor === 'patient' ? 'Ms Tan' : 'AssureBot'}</span>
+                    <span>{entry.actor === 'patient' ? 'Mrs Tan' : 'AssureBot'}</span>
                   </div>
                   <span className="text-[11px] text-slate-400">{formatTime(entry.timestamp)}</span>
                 </div>

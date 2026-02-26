@@ -25,10 +25,10 @@ export function QuickActions({ onMessageClick, onEscalateClick }: QuickActionsPr
         size="sm"
         onClick={handleCall}
         className="gap-1.5 text-emerald-700 border-emerald-300 hover:bg-emerald-50"
-        aria-label="Call Ms. Tan"
+        aria-label="Call Mrs Tan"
       >
         <Phone className="w-3.5 h-3.5" />
-        Call Ms. Tan
+        Call Mrs Tan
       </Button>
 
       <Button

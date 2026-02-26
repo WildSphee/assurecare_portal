@@ -79,7 +79,7 @@ export function TodayGlance({ hideHeader = false }: TodayGlanceProps) {
           title="Medication Adherence"
           value={morningTaken === null ? 'Not reported' : medicationValue}
           lastUpdatedAt={todayAdherence ? adherenceRecordedAt : now}
-          tooltipText="Tracks whether Ms. Tan has taken her prescribed blood pressure medications today. Morning and evening doses are recorded via the daily check-in."
+          tooltipText="Tracks whether Mrs Tan has taken her prescribed blood pressure medications today. Morning and evening doses are recorded via the daily check-in."
           status={medicationStatus}
           streakLabel={`${adherenceStreak}/7 days this week`}
           icon={<Pill className="w-4 h-4" />}
@@ -117,7 +117,7 @@ export function TodayGlance({ hideHeader = false }: TodayGlanceProps) {
           title="Symptoms"
           value={hasSymptoms ? worstSymptom.symptomType : 'None reported'}
           lastUpdatedAt={hasSymptoms ? `${worstSymptom.date}T09:00:00Z` : now}
-          tooltipText="Symptoms reported by Ms. Tan during her daily check-in. Any symptoms, especially recurring or severe ones, should be monitored and discussed with Dr. Chan."
+          tooltipText="Symptoms reported by Mrs Tan during her daily check-in. Any symptoms, especially recurring or severe ones, should be monitored and discussed with the family doctor (Dr. Chan)."
           status={hasSymptoms ? (worstSymptom.severity === 'severe' ? 'alert' : 'warning') : 'normal'}
           icon={hasSymptoms ? <AlertCircle className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
           subValue={hasSymptoms ? `${worstSymptom.severity} severity · ${worstSymptom.date}` : undefined}
@@ -128,7 +128,7 @@ export function TodayGlance({ hideHeader = false }: TodayGlanceProps) {
           title="Exercise / Activity"
           value={todayAdherence?.exerciseDone ? 'Completed' : 'Not recorded'}
           lastUpdatedAt={todayAdherence ? adherenceRecordedAt : now}
-          tooltipText="Whether Ms. Tan completed her daily exercise target (30-minute light walk) as part of her care plan. Regular activity helps manage blood pressure."
+          tooltipText="Whether Mrs Tan completed her daily exercise target (30-minute light walk) as part of her care plan. Regular activity helps manage blood pressure."
           status={todayAdherence?.exerciseDone ? 'normal' : 'warning'}
           icon={<Dumbbell className="w-4 h-4" />}
           subValue="Goal: 30-min light walk daily"
@@ -139,7 +139,7 @@ export function TodayGlance({ hideHeader = false }: TodayGlanceProps) {
           title="Check-in Engagement"
           value="Completed"
           lastUpdatedAt={checkinCompletedAt}
-          tooltipText="Whether Ms. Tan completed her daily health check-in with the AssureCare chatbot. Regular check-ins ensure her data is up to date and she is safe."
+          tooltipText="Whether Mrs Tan completed her daily health check-in with the AssureCare chatbot. Regular check-ins ensure her data is up to date and she is safe."
           status="normal"
           icon={<MessageCircle className="w-4 h-4" />}
           subValue={`Responded at ${formatTime(checkinCompletedAt)} today`}

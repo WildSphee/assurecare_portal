@@ -143,7 +143,7 @@ export function DoctorNotesEditor({ patientId }: { patientId: string }) {
                   </div>
                 </div>
                 <p className="text-xs text-slate-400 mt-1.5">
-                  Dr. Chan · {formatRelative(note.createdAt)}
+                  Family Doctor (Dr. Chan) · {formatRelative(note.createdAt)}
                 </p>
               </div>
             ))}

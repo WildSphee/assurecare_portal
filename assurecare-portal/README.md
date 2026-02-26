@@ -8,7 +8,7 @@ The caregiver assistant chat is fully mocked.
 
 - No OpenAI SDK/library is used.
 - No OpenAI API request is made.
-- Whatever the user types, the chat replies with **Ms. Tan's current status** and a concise **"What to do now"** action checklist using local mock data.
+- Whatever the user types, the chat replies with **Mrs Tan's current status** and a concise **"What to do now"** action checklist using local mock data.
 - A mock loading state is shown before each reply (3-second delay, "Reloading...").
 
 ## Recent UX / Data Updates
@@ -21,7 +21,7 @@ The caregiver assistant chat is fully mocked.
 - Caregiver appointment request form opens **AI-prefilled by default** (reason, time window, notes) and no longer shows the `Include AI summary` toggle.
 - Doctor patient popup header was simplified (single close button, no `Score detail` toggle, no top-right location chip).
 - Doctor patient popup primary action is now **Call the Patient through AssureBot**.
-- Ms. Tan's red alert now explicitly includes **mild heartache**, **missed meds**, and **caregiver escalation** signals.
+- Mrs Tan's red alert now explicitly includes **mild heartache**, **missed meds**, and **caregiver escalation** signals.
 
 ## Tech Stack
 
@@ -57,6 +57,6 @@ If your local `.env` still contains `VITE_OPENAI_API_KEY` / `VITE_OPENAI_MODEL`,
 ## Notes
 
 - The app uses mock data sources under `src/data/mock/`.
-- The mocked chat response pulls Ms. Tan data (`patient-001`) regardless of the currently selected patient.
-- Ms. Tan's active red alert includes `SYMPTOM_HEARTACHE_MILD`, `MISSED_MEDS_STREAK_2`, and `ESCALATION_FROM_CAREGIVER`.
+- The mocked chat response pulls Mrs Tan data (`patient-001`) regardless of the currently selected patient.
+- Mrs Tan's active red alert includes `SYMPTOM_HEARTACHE_MILD`, `MISSED_MEDS_STREAK_2`, and `ESCALATION_FROM_CAREGIVER`.
 - Dialog modals include accessibility descriptions to satisfy Radix `DialogContent` requirements.

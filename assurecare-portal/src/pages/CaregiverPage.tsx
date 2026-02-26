@@ -146,7 +146,7 @@ export function CaregiverPage() {
         open={messageOpen}
         onClose={() => setMessageOpen(false)}
         patientId="patient-001"
-        patientName="Ms. Tan"
+        patientName="Mrs Tan"
         senderRole="caregiver"
         senderId="user-ana"
       />

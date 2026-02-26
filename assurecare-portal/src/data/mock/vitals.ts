@@ -14,7 +14,7 @@ function recordedAt(daysAgo: number, hour = 9): string {
   return dt.toISOString()
 }
 
-// Ms. Tan: vitals currently within normal range
+// Mrs Tan: vitals currently within normal range
 const msTanVitals: Omit<VitalsRecord, 'id'>[] = [
   // 30 days ago
   { patientId: 'patient-001', date: d(30), recordedAt: recordedAt(30), bpSystolic: 128, bpDiastolic: 80, hrBpm: 74, source: 'chatbot', qualityFlag: 'normal' },

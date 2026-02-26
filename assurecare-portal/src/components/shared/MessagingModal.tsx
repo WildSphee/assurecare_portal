@@ -27,7 +27,7 @@ interface MessagingModalProps {
 const TEMPLATES = [
   { id: 'tpl-evening-meds', label: 'Evening medication reminder', text: 'Please remember to take your evening medication.' },
   { id: 'tpl-checkin', label: 'Check-in reminder', text: 'Your check-in is due — please respond when you are ready.' },
-  { id: 'tpl-dr-message', label: 'Doctor message', text: 'Your doctor has sent you a message — please check in tomorrow morning.' },
+  { id: 'tpl-dr-message', label: 'Family doctor message', text: 'Your family doctor has sent you a message — please check in tomorrow morning.' },
   { id: 'tpl-call', label: 'Call notice', text: 'Your caregiver would like to speak with you. Please expect a phone call.' },
 ]
 
@@ -35,7 +35,7 @@ export function MessagingModal({
   open,
   onClose,
   patientId = 'patient-001',
-  patientName = 'Ms. Tan',
+  patientName = 'Mrs Tan',
   senderRole = 'caregiver',
   senderId = 'user-ana',
 }: MessagingModalProps) {
@@ -126,7 +126,7 @@ export function MessagingModal({
               <Textarea
                 value={freeText}
                 onChange={(e) => setFreeText(e.target.value.slice(0, MAX_CHARS))}
-                placeholder="Type a message for Ms. Tan's device..."
+                placeholder="Type a message for Mrs Tan's device..."
                 rows={3}
               />
               <p className="text-xs text-slate-400 text-right">{freeText.length}/{MAX_CHARS}</p>

@@ -18,7 +18,7 @@ export function AppShell() {
     routeRole === 'caregiver'
       ? '/images/caregiver_ana.png'
       : '/images/singapore_doctor_upper_body_square.png'
-  const avatarAlt = routeRole === 'caregiver' ? 'Ana Tan profile' : 'Dr. Chan profile'
+  const avatarAlt = routeRole === 'caregiver' ? 'Ana Tan profile' : 'Family doctor profile'
 
   useEffect(() => {
     if (activeRole !== routeRole) {
@@ -42,7 +42,7 @@ export function AppShell() {
           </div>
           <span className="text-slate-300 text-lg ml-1">|</span>
           <span className="text-slate-500 text-sm">
-            {routeRole === 'caregiver' ? 'Caregiver Portal' : 'Doctor Portal'}
+            {routeRole === 'caregiver' ? 'Caregiver Portal' : 'Family Doctor Portal'}
           </span>
         </div>
 
@@ -70,7 +70,7 @@ export function AppShell() {
               </Tooltip>
             </TooltipProvider>
             <span>
-              {routeRole === 'caregiver' ? 'Ana Tan' : 'Dr. Chan Wei Ming'}
+              {routeRole === 'caregiver' ? 'Ana Tan' : 'Dr. Chan Wei Ming · Family Doctor'}
             </span>
           </div>
         </div>

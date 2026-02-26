@@ -1,7 +1,7 @@
 import type { EscalationRecord } from '@/types'
 
 export const MOCK_ESCALATIONS: EscalationRecord[] = [
-  // Resolved escalation (Ana → Dr. Chan for Ms. Tan, Feb 23)
+  // Resolved escalation (Ana → family doctor Dr. Chan for Mrs Tan, Feb 23)
   {
     id: 'esc-001',
     patientId: 'patient-001',
@@ -9,7 +9,7 @@ export const MOCK_ESCALATIONS: EscalationRecord[] = [
     escalationType: 'to_doctor',
     reasonCodes: ['BP_UPTREND_5D', 'MISSED_MEDS_STREAK_2'],
     outcome: 'resolved',
-    notes: 'Ana noticed BP rising and missed meds. Dr. Chan reviewed and confirmed appointment.',
+    notes: 'Ana noticed BP rising and missed meds. Family doctor Dr. Chan reviewed and confirmed appointment.',
     createdAt: '2026-02-23T20:00:00Z',
     resolvedAt: '2026-02-24T09:00:00Z',
   },

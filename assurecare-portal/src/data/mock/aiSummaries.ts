@@ -1,14 +1,14 @@
 import type { AISummary } from '@/types'
 
 export const MOCK_AI_SUMMARIES: AISummary[] = [
-  // Ms. Tan — Daily summary
+  // Mrs Tan — Daily summary
   {
     id: 'summary-001',
     patientId: 'patient-001',
     date: '2026-02-25',
     summaryType: 'daily',
     narrative:
-      'Ms. Tan is having mild heartache at 09:05, stating "我胸口疼，是否应该向陈医生预约看诊？". Her latest vitals are within her usual range (BP 126/80 mmHg, HR 76 bpm). She missed her evening medication on the past 2 days but took her medication today. Given her recent cardiac history and new heartache symptom despite normal vitals, this remains a concern. Recommend contacting Dr. Chan today to review symptoms and advise on next steps.',
+      'Mrs Tan is having mild heartache at 09:05, stating "我胸口疼，是否应该向陈医生预约看诊？". Her latest vitals are within her usual range (BP 126/80 mmHg, HR 76 bpm). She missed her evening medication on the past 2 days but took her medication today. Given her recent cardiac history and new heartache symptom despite normal vitals, this remains a concern. Recommend contacting the family doctor (Dr. Chan) today to review symptoms and advise on next steps.',
     highlights: [
       // 'BP has increased from 130 to 148 mmHg (systolic) over the past 10 days',
       // 'Evening medication missed on Feb 23 and Feb 24 (2-day streak)',
@@ -18,15 +18,15 @@ export const MOCK_AI_SUMMARIES: AISummary[] = [
     ],
     keyDrivers: ['MISSED_MEDS_STREAK_2'],
     suggestedActions: [
-      'Consider calling Ms. Tan to check in on how she is feeling today',
+      'Consider calling Mrs Tan to check in on how she is feeling today',
       'Reinforce medication adherence after the 2 missed evening doses',
-      'Contact Dr. Chan today to review the mild heartache even though current vitals are normal',
+      'Contact the family doctor (Dr. Chan) today to review the mild heartache even though current vitals are normal',
     ],
     confidence: 'high',
     dataCoverageRange: { from: '2026-02-18', to: '2026-02-25' },
     generatedAt: '2026-02-25T09:10:00Z',
   },
-  // Ms. Tan — Clinical summary
+  // Mrs Tan — Clinical summary
   {
     id: 'summary-002',
     patientId: 'patient-001',
@@ -43,7 +43,7 @@ export const MOCK_AI_SUMMARIES: AISummary[] = [
     ],
     keyDrivers: ['MISSED_MEDS_STREAK_2'],
     suggestedActions: [
-      'Contact Dr. Chan / clinician today for symptom review',
+      'Contact the family doctor (Dr. Chan) / clinician today for symptom review',
       'Clarify heartache onset, duration, severity, radiation, and associated symptoms',
       'Review adherence barriers for the 2 missed evening doses and reinforce plan',
     ],

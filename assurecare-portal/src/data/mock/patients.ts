@@ -3,7 +3,7 @@ import type { Patient } from '@/types'
 export const MOCK_PATIENTS: Patient[] = [
   {
     id: 'patient-001',
-    name: 'Ms. Tan Bee Leng',
+    name: 'Mrs Tan Bee Leng',
     age: 68,
     conditions: ['Hypertension', 'Mild heart attack (last week)'],
     doctorId: 'user-dr-chan',

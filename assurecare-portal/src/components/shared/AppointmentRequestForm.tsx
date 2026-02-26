@@ -96,7 +96,7 @@ export function AppointmentRequestForm({
       initiatedBy: requesterId,
     })
     logAction(requesterId, requesterRole, patientId, 'appointment_requested', { appointmentId: id, reason })
-    toast.success('Appointment request sent to Dr. Chan\'s clinic')
+    toast.success('Appointment request sent to the family doctor\'s clinic')
     onClose()
     setReason(DEFAULT_REASON)
     setSelectedWindows(DEFAULT_TIME_WINDOWS)
@@ -109,7 +109,7 @@ export function AppointmentRequestForm({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Calendar className="w-5 h-5 text-primary" />
-            Request Appointment with Dr. Chan
+            Request Appointment with Family Doctor
           </DialogTitle>
           <DialogDescription className="sr-only">
             Submit an appointment request with prefilled AI-prepared context and preferred time windows.
@@ -152,7 +152,7 @@ export function AppointmentRequestForm({
             <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Add any additional context for Dr. Chan..."
+              placeholder="Add any additional context for the family doctor..."
               rows={3}
             />
           </div>

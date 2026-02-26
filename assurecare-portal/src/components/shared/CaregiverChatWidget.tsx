@@ -35,7 +35,7 @@ function createMessage(role: ChatRole, content: string, isError = false): ChatMe
 }
 
 function buildMsTanMockReply(msTanData: ReturnType<typeof usePatient>): string {
-  const patientName = msTanData.patient?.name ?? 'Ms. Tan'
+  const patientName = msTanData.patient?.name ?? 'Mrs Tan'
   const vitals = msTanData.latestVitals
   const symptom = msTanData.patientSymptoms[0]
   const symptomsLabel = symptom
@@ -52,8 +52,8 @@ function buildMsTanMockReply(msTanData: ReturnType<typeof usePatient>): string {
   ]
 
   const recommendedActions = [
-    'Call Ms. Tan now to check pain severity, duration, and any worsening symptoms.',
-    'Update Dr. Chan today for same-day symptom review.',
+    'Call Mrs Tan now to check pain severity, duration, and any worsening symptoms.',
+    'Update the family doctor (Dr. Chan) today for same-day symptom review.',
     'If chest pain worsens or breathing difficulty starts, seek urgent/emergency care immediately.',
   ]
 
@@ -68,7 +68,7 @@ function buildMsTanMockReply(msTanData: ReturnType<typeof usePatient>): string {
 function buildWelcomeMessage(): ChatMessage {
   return createMessage(
     'assistant',
-    "Mock chat mode is enabled. Whatever you ask, I'll reply with Ms. Tan's today's status and recommended action."
+    "Mock chat mode is enabled. Whatever you ask, I'll reply with Mrs Tan's today's status and recommended action."
   )
 }
 

@@ -1,7 +1,7 @@
 import type { Alert } from '@/types'
 
 export const MOCK_ALERTS: Alert[] = [
-  // Ms. Tan — Red (heartache priority)
+  // Mrs Tan — Red (heartache priority)
   {
     id: 'alert-001',
     patientId: 'patient-001',
@@ -117,7 +117,7 @@ export const MOCK_ALERTS: Alert[] = [
     createdAt: '2026-02-23T10:00:00Z',
     status: 'acknowledged',
   },
-  // Resolved old alert for Ms. Tan (historical)
+  // Resolved old alert for Mrs Tan (historical)
   {
     id: 'alert-007',
     patientId: 'patient-001',

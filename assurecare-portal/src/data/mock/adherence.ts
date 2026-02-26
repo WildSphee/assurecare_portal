@@ -6,7 +6,7 @@ function d(daysAgo: number): string {
   return dt.toISOString().split('T')[0]
 }
 
-// Ms. Tan: missed evening meds Feb 23 (day 2) and Feb 24 (day 1)
+// Mrs Tan: missed evening meds Feb 23 (day 2) and Feb 24 (day 1)
 const msTanAdherence: Omit<AdherenceRecord, 'id'>[] = Array.from({ length: 30 }, (_, i) => {
   const daysAgo = 29 - i
   const isMissedEvening = daysAgo === 1 || daysAgo === 2
