@@ -3,14 +3,14 @@ import { useAppointmentStore } from '@/store/useAppointmentStore'
 import { useUIStore } from '@/store/useUIStore'
 import { AlertTriangle, Eye, WifiOff, Calendar } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { addDays, parseISO } from 'date-fns'
+import { addDays, parseISO, startOfDay } from 'date-fns'
 
 export function KPICounters() {
   const { alerts, patients } = usePatientStore()
   const { appointments } = useAppointmentStore()
   const { toggleFilter, activeFilters } = useUIStore()
 
-  const today = new Date('2026-02-25')
+  const today = startOfDay(new Date())
 
   const redAlerts = alerts.filter((a) => a.severity === 'red' && a.status === 'open').length
   const yellowAlerts = alerts.filter((a) => a.severity === 'yellow' && a.status === 'open').length

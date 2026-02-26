@@ -8,7 +8,7 @@ export const MOCK_AI_SUMMARIES: AISummary[] = [
     date: '2026-02-25',
     summaryType: 'daily',
     narrative:
-      'Ms. Tan completed her check-in this morning at 09:05. Her latest vitals are within her usual range (BP 126/80 mmHg, HR 76 bpm). This afternoon she reported mild heartache, saying, \"I have a mild heartache this afternoon, but I can still rest and breathe normally.\" She missed her evening medication on the past 2 days but took her medication today. Given her recent cardiac history and new heartache symptom despite normal vitals, this remains a concern. Recommend contacting Dr. Chan today to review symptoms and advise on next steps.',
+      'Ms. Tan is having mild heartache at 09:05, stating "我胸口疼，是否应该向陈医生预约看诊？". Her latest vitals are within her usual range (BP 126/80 mmHg, HR 76 bpm). She missed her evening medication on the past 2 days but took her medication today. Given her recent cardiac history and new heartache symptom despite normal vitals, this remains a concern. Recommend contacting Dr. Chan today to review symptoms and advise on next steps.',
     highlights: [
       // 'BP has increased from 130 to 148 mmHg (systolic) over the past 10 days',
       // 'Evening medication missed on Feb 23 and Feb 24 (2-day streak)',

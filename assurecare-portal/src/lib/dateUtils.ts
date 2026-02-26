@@ -6,6 +6,7 @@ import {
   isToday as dfnsIsToday,
   differenceInDays,
   isValid,
+  startOfDay,
 } from 'date-fns'
 
 export function formatDate(iso: string): string {
@@ -74,8 +75,9 @@ export function getLast30Days(): string[] {
 
 export function getDateRange(days: number): string[] {
   const result: string[] = []
+  const today = startOfDay(new Date())
   for (let i = days - 1; i >= 0; i--) {
-    result.push(format(subDays(new Date('2026-02-25'), i), 'yyyy-MM-dd'))
+    result.push(format(subDays(today, i), 'yyyy-MM-dd'))
   }
   return result
 }

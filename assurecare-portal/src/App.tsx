@@ -22,6 +22,7 @@ import {
   MOCK_CAREGIVER_NOTES,
   MOCK_APPOINTMENTS,
 } from '@/data/mock'
+import { shiftMockDatesDeep } from '@/lib/mockDate'
 
 function App() {
   const { seed: seedPatients } = usePatientStore()
@@ -29,21 +30,35 @@ function App() {
   const { seed: seedActionLog } = useActionLogStore()
 
   useEffect(() => {
+    const seededPatients = shiftMockDatesDeep(MOCK_PATIENTS)
+    const seededAlerts = shiftMockDatesDeep(MOCK_ALERTS)
+    const seededSymptoms = shiftMockDatesDeep(MOCK_SYMPTOMS)
+    const seededVitals = shiftMockDatesDeep(MOCK_VITALS)
+    const seededAdherence = shiftMockDatesDeep(MOCK_ADHERENCE)
+    const seededAiSummaries = shiftMockDatesDeep(MOCK_AI_SUMMARIES)
+    const seededDoctorNotes = shiftMockDatesDeep(MOCK_DOCTOR_NOTES)
+    const seededCaregiverNotes = shiftMockDatesDeep(MOCK_CAREGIVER_NOTES)
+    const seededEscalations = shiftMockDatesDeep(MOCK_ESCALATIONS)
+    const seededMessages = shiftMockDatesDeep(MOCK_MESSAGES)
+    const seededCarePlan = shiftMockDatesDeep(MOCK_CARE_PLAN)
+    const seededAppointments = shiftMockDatesDeep(MOCK_APPOINTMENTS)
+    const seededActionLog = shiftMockDatesDeep(MOCK_ACTION_LOG)
+
     seedPatients({
-      patients: MOCK_PATIENTS,
-      alerts: MOCK_ALERTS,
-      symptoms: MOCK_SYMPTOMS,
-      vitals: MOCK_VITALS,
-      adherence: MOCK_ADHERENCE,
-      aiSummaries: MOCK_AI_SUMMARIES,
-      doctorNotes: MOCK_DOCTOR_NOTES,
-      caregiverNotes: MOCK_CAREGIVER_NOTES,
-      escalations: MOCK_ESCALATIONS,
-      messages: MOCK_MESSAGES,
-      carePlan: MOCK_CARE_PLAN,
+      patients: seededPatients,
+      alerts: seededAlerts,
+      symptoms: seededSymptoms,
+      vitals: seededVitals,
+      adherence: seededAdherence,
+      aiSummaries: seededAiSummaries,
+      doctorNotes: seededDoctorNotes,
+      caregiverNotes: seededCaregiverNotes,
+      escalations: seededEscalations,
+      messages: seededMessages,
+      carePlan: seededCarePlan,
     })
-    seedAppointments(MOCK_APPOINTMENTS)
-    seedActionLog(MOCK_ACTION_LOG)
+    seedAppointments(seededAppointments)
+    seedActionLog(seededActionLog)
   }, [seedPatients, seedAppointments, seedActionLog])
 
   return (

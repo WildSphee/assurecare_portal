@@ -255,7 +255,7 @@ export function PatientTable() {
                       <div>
                         <p className="font-medium text-sm text-slate-900">{patient.name}</p>
                         <p className="text-xs text-slate-500">
-                          Age {patient.age} ·{' '}
+                          Age {patient.age} ·{' '}· Toa Payoh
                           <span className={cn('font-medium', getRiskColor(patient.riskStatus))}>
                             {getRiskLabel(patient.riskStatus)}
                           </span>
