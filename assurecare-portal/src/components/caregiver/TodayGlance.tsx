@@ -1,5 +1,7 @@
 import { MetricTile } from '@/components/shared/MetricTile'
 import { usePatient } from '@/hooks/usePatient'
+import { formatTime } from '@/lib/dateUtils'
+import { getTodayIsoAtUtcTime } from '@/lib/mockDate'
 import { Pill, Activity, AlertCircle, CheckCircle2, Dumbbell, MessageCircle } from 'lucide-react'
 
 interface TodayGlanceProps {
@@ -45,10 +47,24 @@ export function TodayGlance({ hideHeader = false }: TodayGlanceProps) {
       ? 'alert'
       : latestVitals.bpSystolic >= 140
         ? 'warning'
+        : latestVitals.bpSystolic <= 90
+          ? 'alert'
+          : latestVitals.bpSystolic < 100
+            ? 'warning'
         : 'normal'
     : 'normal'
 
-  const now = new Date('2026-02-25T09:05:00Z').toISOString()
+  const hrStatus: 'normal' | 'warning' | 'alert' = latestVitals
+    ? latestVitals.hrBpm > 110 || latestVitals.hrBpm < 50
+      ? 'alert'
+      : latestVitals.hrBpm > 100 || latestVitals.hrBpm < 60
+        ? 'warning'
+        : 'normal'
+    : 'normal'
+
+  const checkinCompletedAt = getTodayIsoAtUtcTime('09:05:00')
+  const adherenceRecordedAt = getTodayIsoAtUtcTime('08:30:00')
+  const now = checkinCompletedAt
 
   return (
     <div>
@@ -57,12 +73,12 @@ export function TodayGlance({ hideHeader = false }: TodayGlanceProps) {
           Today at a Glance
         </h2>
       )}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {/* Medication Adherence */}
         <MetricTile
           title="Medication Adherence"
           value={morningTaken === null ? 'Not reported' : medicationValue}
-          lastUpdatedAt={todayAdherence ? `2026-02-25T08:30:00Z` : now}
+          lastUpdatedAt={todayAdherence ? adherenceRecordedAt : now}
           tooltipText="Tracks whether Ms. Tan has taken her prescribed blood pressure medications today. Morning and evening doses are recorded via the daily check-in."
           status={medicationStatus}
           streakLabel={`${adherenceStreak}/7 days this week`}
@@ -92,7 +108,7 @@ export function TodayGlance({ hideHeader = false }: TodayGlanceProps) {
           trendColor="neutral"
           lastUpdatedAt={latestVitals?.recordedAt ?? now}
           tooltipText="Heart rate (beats per minute) measures how fast the heart is beating. A normal resting heart rate for adults is 60–100 bpm."
-          status="normal"
+          status={hrStatus}
           icon={<Activity className="w-4 h-4" />}
         />
 
@@ -111,7 +127,7 @@ export function TodayGlance({ hideHeader = false }: TodayGlanceProps) {
         <MetricTile
           title="Exercise / Activity"
           value={todayAdherence?.exerciseDone ? 'Completed' : 'Not recorded'}
-          lastUpdatedAt={todayAdherence ? `2026-02-25T08:30:00Z` : now}
+          lastUpdatedAt={todayAdherence ? adherenceRecordedAt : now}
           tooltipText="Whether Ms. Tan completed her daily exercise target (30-minute light walk) as part of her care plan. Regular activity helps manage blood pressure."
           status={todayAdherence?.exerciseDone ? 'normal' : 'warning'}
           icon={<Dumbbell className="w-4 h-4" />}
@@ -122,12 +138,11 @@ export function TodayGlance({ hideHeader = false }: TodayGlanceProps) {
         <MetricTile
           title="Check-in Engagement"
           value="Completed"
-          lastUpdatedAt="2026-02-25T09:05:00Z"
+          lastUpdatedAt={checkinCompletedAt}
           tooltipText="Whether Ms. Tan completed her daily health check-in with the AssureCare chatbot. Regular check-ins ensure her data is up to date and she is safe."
           status="normal"
           icon={<MessageCircle className="w-4 h-4" />}
-          streakLabel="Daily streak active"
-          subValue="Responded at 09:05 today"
+          subValue={`Responded at ${formatTime(checkinCompletedAt)} today`}
         />
       </div>
     </div>

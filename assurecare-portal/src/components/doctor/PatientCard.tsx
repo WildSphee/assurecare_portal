@@ -42,7 +42,7 @@ export function PatientCard({
 
   let primaryIssue = 'Stable check-in, no active issue flagged'
   let issueMeta: string | null = null
-  let issueToneClass = 'bg-slate-50 text-slate-900 border border-slate-200'
+  let issueToneClass = 'bg-white/90 text-slate-900 border border-slate-300 shadow-sm'
 
   const shouldPrioritizeSymptom =
     Boolean(prioritizedSymptom) &&
@@ -51,7 +51,7 @@ export function PatientCard({
   if (shouldPrioritizeSymptom && prioritizedSymptom) {
     primaryIssue = `${prioritizedSymptom.symptomType} (${prioritizedSymptom.severity})`
     issueMeta = activeSymptoms.length > 1 ? `+${activeSymptoms.length - 1} more reported symptom(s)` : null
-    issueToneClass = 'bg-slate-50 text-slate-900 border border-slate-200'
+    issueToneClass = 'bg-white/90 text-slate-900 border border-slate-300 shadow-sm'
   } else if (topReasonLabel) {
     primaryIssue = topReasonLabel
     issueMeta =
@@ -59,18 +59,18 @@ export function PatientCard({
         ? `+${latestAlert.reasonCodes.length - 1} additional signal${latestAlert.reasonCodes.length > 2 ? 's' : ''}`
         : null
     if (patient.riskStatus === 'red') {
-      issueToneClass = 'bg-slate-50 text-slate-900 border border-slate-200'
+      issueToneClass = 'bg-white/90 text-slate-900 border border-slate-300 shadow-sm'
     } else if (patient.riskStatus === 'yellow') {
-      issueToneClass = 'bg-slate-50 text-slate-900 border border-slate-200'
+      issueToneClass = 'bg-white/90 text-slate-900 border border-slate-300 shadow-sm'
     }
   } else if (topSymptom) {
     primaryIssue = `${topSymptom.symptomType} (${topSymptom.severity})`
     issueMeta = activeSymptoms.length > 1 ? `+${activeSymptoms.length - 1} more reported symptom(s)` : null
-    issueToneClass = 'bg-slate-50 text-slate-900 border border-slate-200'
+    issueToneClass = 'bg-white/90 text-slate-900 border border-slate-300 shadow-sm'
   } else if (isNoData) {
     primaryIssue = `No check-in for ${patient.noResponseStreak} days`
     issueMeta = 'Follow up to confirm patient status'
-    issueToneClass = 'bg-slate-50 text-slate-900 border border-slate-200'
+    issueToneClass = 'bg-white/90 text-slate-900 border border-slate-300 shadow-sm'
   }
 
   const highlightIssue = /chest|heart|shortness|severe/i.test(primaryIssue)
@@ -86,8 +86,8 @@ export function PatientCard({
   return (
     <div
       className={cn(
-        'bg-white rounded-2xl border border-slate-200 hover:shadow-md transition-all cursor-pointer flex flex-col p-4 gap-4',
-        highlightIssue && 'ring-1 ring-red-200 shadow-red-50/80'
+        'bg-white rounded-2xl border border-slate-300 hover:border-slate-400 hover:shadow-lg transition-all cursor-pointer flex flex-col p-4 gap-4 shadow-sm',
+        highlightIssue && 'ring-1 ring-red-300 shadow-red-100/80'
       )}
       onClick={() => onOpen(patient.id)}
       role="button"
@@ -104,7 +104,7 @@ export function PatientCard({
             </p>
           </div>
           {patient.location?.area && (
-            <div className="shrink-0 inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] text-slate-600">
+            <div className="shrink-0 inline-flex items-center gap-1 rounded-full border border-slate-300 bg-white px-2 py-1 text-[11px] text-slate-600 shadow-sm">
               <MapPin className="w-3 h-3 text-slate-400" />
               <span className="max-w-[120px] truncate">{patient.location.area}</span>
             </div>
@@ -124,13 +124,13 @@ export function PatientCard({
 
         <div className="grid grid-cols-1 gap-2 text-xs text-slate-600">
           {latestVitals && (
-            <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-2.5 py-2">
+            <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50/90 px-2.5 py-2">
               <Activity className="w-3.5 h-3.5 text-slate-400 shrink-0" />
               <span>BP {latestVitals.bpSystolic}/{latestVitals.bpDiastolic} · HR {latestVitals.hrBpm}</span>
             </div>
           )}
 
-          <div className="rounded-lg bg-slate-50 px-2.5 py-2">
+          <div className="rounded-lg border border-slate-200 bg-slate-50/90 px-2.5 py-2">
             <div className="flex items-center justify-between gap-2 mb-1.5">
               <div className="flex items-center gap-1.5">
                 <Pill className="w-3.5 h-3.5 text-slate-400" />

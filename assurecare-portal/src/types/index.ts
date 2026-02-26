@@ -217,6 +217,7 @@ export interface TrendDataPoint {
   date: string
   value: number | null
   isOutlier?: boolean
+  highlightValue?: number | null
 }
 
 export interface TimelineEvent {

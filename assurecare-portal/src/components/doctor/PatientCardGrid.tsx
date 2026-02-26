@@ -6,10 +6,11 @@ import { useActionLogStore } from '@/store/useActionLogStore'
 import { PatientCard } from './PatientCard'
 import { SkeletonCard } from '@/components/shared/SkeletonCard'
 import { getDateRange } from '@/lib/dateUtils'
+import { REASON_CODE_LABELS } from '@/lib/reasonCodes'
 import { cn } from '@/lib/utils'
-import type { Patient, VitalsRecord, SymptomSignal, Alert, Appointment, RiskLevel } from '@/types'
+import type { Patient, VitalsRecord, SymptomSignal, Alert, Appointment, RiskLevel, AISummary } from '@/types'
 import { toast } from 'sonner'
-import { Users } from 'lucide-react'
+import { Sparkles, Users } from 'lucide-react'
 
 const RISK_ORDER: Record<string, number> = { red: 0, yellow: 1, green: 2 }
 
@@ -24,22 +25,22 @@ const BOARD_COLUMNS: Array<{
     risk: 'red',
     title: 'Priority Review',
     subtitle: 'Severe symptoms or high-risk signals',
-    columnClass: 'border-red-200 bg-gradient-to-b from-red-100/80 via-red-50 to-white',
-    badgeClass: 'bg-red-100 text-red-700 border-red-200',
+    columnClass: 'border-red-300 bg-red-50',
+    badgeClass: 'bg-red-100 text-red-700 border-red-300',
   },
   {
     risk: 'yellow',
     title: 'Monitor',
     subtitle: 'Needs follow-up soon',
-    columnClass: 'border-amber-200 bg-gradient-to-b from-amber-100/80 via-amber-50 to-white',
-    badgeClass: 'bg-amber-100 text-amber-700 border-amber-200',
+    columnClass: 'border-amber-300 bg-amber-50',
+    badgeClass: 'bg-amber-100 text-amber-700 border-amber-300',
   },
   {
     risk: 'green',
     title: 'Stable',
     subtitle: 'No immediate concerns',
-    columnClass: 'border-emerald-200 bg-gradient-to-b from-emerald-100/80 via-emerald-50 to-white',
-    badgeClass: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+    columnClass: 'border-emerald-300 bg-emerald-50',
+    badgeClass: 'bg-emerald-100 text-emerald-700 border-emerald-300',
   },
 ]
 
@@ -53,7 +54,7 @@ interface PatientRowData {
 }
 
 export function PatientCardGrid() {
-  const { patients, alerts, vitals, adherence, symptoms } = usePatientStore()
+  const { patients, alerts, vitals, adherence, symptoms, aiSummaries } = usePatientStore()
   const { appointments } = useAppointmentStore()
   const { searchQuery, activeFilters, sortOrder, setSelectedPatient, clearFilters } = useUIStore()
   const { logAction } = useActionLogStore()
@@ -161,9 +162,82 @@ export function PatientCardGrid() {
     } as const
   }, [filteredAndSorted])
 
+  const latestClinicalSummaryByPatient = useMemo(() => {
+    const map = new Map<string, AISummary>()
+    for (const summary of aiSummaries) {
+      if (summary.summaryType !== 'clinical') continue
+      const prev = map.get(summary.patientId)
+      if (!prev || summary.generatedAt > prev.generatedAt) {
+        map.set(summary.patientId, summary)
+      }
+    }
+    return map
+  }, [aiSummaries])
+
+  const portfolioInsight = useMemo(() => {
+    const total = filteredAndSorted.length
+    const red = groupedPatients.red.length
+    const yellow = groupedPatients.yellow.length
+    const green = groupedPatients.green.length
+    const noResponse = filteredAndSorted.filter(({ patient }) => patient.noResponseStreak >= 2).length
+    const openAlerts = filteredAndSorted.filter(({ latestAlert }) => Boolean(latestAlert)).length
+    const issueCount = filteredAndSorted.filter(
+      ({ patient, latestAlert }) =>
+        patient.riskStatus !== 'green' || Boolean(latestAlert) || patient.noResponseStreak >= 2
+    ).length
+    const stableCount = Math.max(0, total - issueCount)
+
+    const topPriorityPatient =
+      filteredAndSorted.find(({ patient }) => patient.riskStatus === 'red') ??
+      filteredAndSorted.find(({ patient }) => patient.riskStatus === 'yellow') ??
+      filteredAndSorted[0]
+
+    const topSummary = topPriorityPatient
+      ? latestClinicalSummaryByPatient.get(topPriorityPatient.patient.id) ?? null
+      : null
+
+    const topAlertReason = topPriorityPatient?.latestAlert?.reasonCodes[0]
+      ? REASON_CODE_LABELS[topPriorityPatient.latestAlert.reasonCodes[0]]
+      : null
+    const topSymptom = topPriorityPatient?.activeSymptoms[0]
+
+    const highlight =
+      topSummary?.highlights[0] ??
+      (topSymptom ? `${topSymptom.symptomType} (${topSymptom.severity}) reported` : null) ??
+      topAlertReason ??
+      (noResponse > 0 ? `${noResponse} patient${noResponse > 1 ? 's' : ''} with no response >48h` : null) ??
+      'Most patients are stable with no urgent deterioration signal today.'
+
+    const narrative =
+      total === 0
+        ? 'No patient records match the current filters.'
+        : issueCount === 0
+          ? `All ${total} visible patients are stable today with no open alert signals. Continue routine monitoring and scheduled follow-up.`
+          : `${issueCount} of ${total} visible patients need attention (${red} priority, ${yellow} monitor). ${noResponse > 0 ? `${noResponse} have no response >48h. ` : ''}${topPriorityPatient ? `Top focus: ${topPriorityPatient.patient.name}.` : ''}`
+
+    return {
+      total,
+      red,
+      yellow,
+      green,
+      noResponse,
+      openAlerts,
+      issueCount,
+      stableCount,
+      highlight,
+      narrative,
+      generatedAt:
+        filteredAndSorted
+          .map(({ patient }) => latestClinicalSummaryByPatient.get(patient.id)?.generatedAt)
+          .filter(Boolean)
+          .sort()
+          .at(-1) ?? null,
+    }
+  }, [filteredAndSorted, groupedPatients, latestClinicalSummaryByPatient])
+
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-5 sm:p-6 bg-slate-50">
         {Array.from({ length: 6 }).map((_, i) => (
           <SkeletonCard key={i} />
         ))}
@@ -188,7 +262,50 @@ export function PatientCardGrid() {
   }
 
   return (
-    <div className="p-4 sm:p-6">
+    <div className="p-4 sm:p-6 bg-slate-50">
+      <section className="mb-2 rounded-2xl border border-violet-300 bg-violet-50 p-3 shadow-[0_10px_28px_-20px_rgba(124,58,237,0.35)]">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-violet-300/80 bg-white/70 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-violet-800">
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>AI Insight</span>
+            </div>
+            <p className="mt-1 text-sm text-violet-900/80">
+              {portfolioInsight.narrative}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-2 flex flex-wrap gap-2">
+          <span className="inline-flex items-center gap-1 rounded-full border border-violet-200 bg-white/75 px-2.5 py-1 text-xs text-slate-700">
+            Total <span className="font-semibold text-violet-950">{portfolioInsight.total}</span>
+          </span>
+          <span className="inline-flex items-center gap-1 rounded-full border border-red-200 bg-white/75 px-2.5 py-1 text-xs text-slate-700">
+            Issues <span className="font-semibold text-red-700">{portfolioInsight.issueCount}</span>
+          </span>
+          <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-white/75 px-2.5 py-1 text-xs text-slate-700">
+            Stable <span className="font-semibold text-emerald-700">{portfolioInsight.stableCount}</span>
+          </span>
+          <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-white/75 px-2.5 py-1 text-xs text-slate-700">
+            No response &gt;48h <span className="font-semibold text-amber-700">{portfolioInsight.noResponse}</span>
+          </span>
+          <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white/75 px-2.5 py-1 text-xs text-slate-700">
+            Open alerts <span className="font-semibold text-slate-900">{portfolioInsight.openAlerts}</span>
+          </span>
+          <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white/75 px-2.5 py-1 text-xs text-slate-700">
+            Priority <span className="font-semibold text-red-700">{portfolioInsight.red}</span>
+          </span>
+          <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white/75 px-2.5 py-1 text-xs text-slate-700">
+            Monitor <span className="font-semibold text-amber-700">{portfolioInsight.yellow}</span>
+          </span>
+          <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white/75 px-2.5 py-1 text-xs text-slate-700">
+            Stable group <span className="font-semibold text-emerald-700">{portfolioInsight.green}</span>
+          </span>
+        </div>
+      </section>
+
+      <div className="mb-2 h-px bg-slate-300/80" aria-hidden="true" />
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
         {BOARD_COLUMNS.map((column) => {
           const columnPatients = groupedPatients[column.risk]
@@ -196,7 +313,7 @@ export function PatientCardGrid() {
           return (
             <section
               key={column.risk}
-              className={cn('rounded-2xl border p-4 shadow-sm min-h-[520px]', column.columnClass)}
+              className={cn('rounded-2xl border p-4 shadow-md min-h-[520px]', column.columnClass)}
               aria-label={`${column.title} patient column`}
             >
               <div className="mb-3">
@@ -218,7 +335,7 @@ export function PatientCardGrid() {
 
               <div className="space-y-3 min-h-16">
                 {columnPatients.length === 0 ? (
-                  <div className="rounded-xl border border-dashed border-slate-300 bg-white/70 p-4 text-xs text-slate-500">
+                  <div className="rounded-xl border border-dashed border-slate-400/70 bg-white/85 p-4 text-xs text-slate-600">
                     No patients in this category.
                   </div>
                 ) : (

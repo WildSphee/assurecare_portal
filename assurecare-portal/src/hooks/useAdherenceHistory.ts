@@ -16,7 +16,9 @@ export function useAdherenceHistory(patientId: string, days: 7 | 14 | 30) {
       if (!record) return { date, value: null }
       const total = 2
       const taken = [record.medsMorningTaken, record.medsEveningTaken].filter(Boolean).length
-      return { date, value: Math.round((taken / total) * 100) }
+      const value = Math.round((taken / total) * 100)
+      const missedDose = record.medsMorningTaken === false || record.medsEveningTaken === false
+      return { date, value, highlightValue: missedDose ? value : null }
     })
 
     // Last 7-day adherence dots (for card display)

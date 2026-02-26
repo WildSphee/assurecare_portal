@@ -9,7 +9,7 @@ export const MOCK_PATIENTS: Patient[] = [
     doctorId: 'user-dr-chan',
     caregiverIds: ['user-ana'],
     location: { lat: 1.3329, lng: 103.8471, area: 'Toa Payoh, Singapore' },
-    riskStatus: 'yellow',
+    riskStatus: 'red',
     lastCheckinAt: '2026-02-25T09:05:00Z',
     noResponseStreak: 0,
   },

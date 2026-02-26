@@ -91,6 +91,8 @@ export function TrendChart({
   showViewToggle = true,
 }: TrendChartProps) {
   const displayData = viewMode === 'rolling_avg' ? computeRollingAvg(data) : data
+  const hasHighlightedSegment =
+    viewMode === 'daily' && displayData.some((point) => point.highlightValue !== null && point.highlightValue !== undefined)
 
   // X-axis tick: show every Nth label based on range
   const tickInterval = timeRange === 7 ? 0 : timeRange === 14 ? 1 : 4
@@ -202,6 +204,17 @@ export function TrendChart({
             activeDot={{ r: 4, fill: color }}
             connectNulls={false}
           />
+          {hasHighlightedSegment && (
+            <Line
+              type="monotone"
+              dataKey="highlightValue"
+              stroke="#DC2626"
+              strokeWidth={2.5}
+              dot={{ r: 3.5, fill: '#DC2626', stroke: 'white', strokeWidth: 1 }}
+              activeDot={{ r: 4, fill: '#DC2626' }}
+              connectNulls={false}
+            />
+          )}
         </LineChart>
       </ResponsiveContainer>
     </div>

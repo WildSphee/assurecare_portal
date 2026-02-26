@@ -2,7 +2,6 @@ import { Sparkles, ChevronDown, ChevronUp } from 'lucide-react'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import type { AISummary as AISummaryType, RiskLevel } from '@/types'
-import { formatDateTime } from '@/lib/dateUtils'
 
 interface AISummaryProps {
   summary: AISummaryType
@@ -57,14 +56,14 @@ export function AISummary({ summary, riskLevel, variant = 'caregiver' }: AISumma
   return (
     <div
       className={cn(
-        'rounded-xl border p-5',
+        'rounded-xl border',
         isCaregiver
-          ? 'border-violet-300 bg-gradient-to-br from-violet-100 via-purple-50 to-fuchsia-100 shadow-[0_8px_24px_-18px_rgba(124,58,237,0.45)]'
-          : 'border-slate-200 bg-white'
+          ? 'border-violet-300 bg-gradient-to-br from-violet-100 via-purple-50 to-fuchsia-100 p-4 shadow-[0_8px_24px_-18px_rgba(124,58,237,0.45)]'
+          : 'border-slate-200 bg-white p-5'
       )}
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className={cn('flex items-center justify-between', isCaregiver ? 'mb-3' : 'mb-4')}>
         <div className="flex items-center gap-2">
           <div
             className={cn(
@@ -82,9 +81,9 @@ export function AISummary({ summary, riskLevel, variant = 'caregiver' }: AISumma
           <p className="text-xs text-slate-400">
             Confidence: <span className="font-medium capitalize text-slate-600">{summary.confidence}</span>
           </p>
-          <p className="text-xs text-slate-400">
+          {/* <p className="text-xs text-slate-400">
             {formatDateTime(summary.generatedAt)}
-          </p>
+          </p> */}
         </div>
       </div>
 
@@ -101,7 +100,7 @@ export function AISummary({ summary, riskLevel, variant = 'caregiver' }: AISumma
       )}
 
       {/* Highlights */}
-      <div className="space-y-2 mb-4">
+      <div className={cn(isCaregiver ? 'space-y-1.5 mb-3' : 'space-y-2 mb-4')}>
         {summary.highlights.map((h, i) => (
           <div key={i} className="flex items-start gap-2 text-sm text-slate-700">
             <span className="mt-0.5 shrink-0">{getHighlightIcon(h)}</span>
@@ -124,10 +123,10 @@ export function AISummary({ summary, riskLevel, variant = 'caregiver' }: AISumma
       {(isCaregiver || showNarrative) && (
         <p
           className={cn(
-            'text-sm leading-relaxed mb-4',
+            'text-sm leading-relaxed',
             isCaregiver
-              ? 'text-slate-700'
-              : 'text-slate-600 rounded-lg p-3 bg-slate-50'
+              ? 'mb-3 text-slate-700'
+              : 'mb-4 text-slate-600 rounded-lg p-3 bg-slate-50'
           )}
         >
           {narrativeText}
@@ -136,7 +135,7 @@ export function AISummary({ summary, riskLevel, variant = 'caregiver' }: AISumma
 
       {/* Suggested actions (caregiver variant only) */}
       {variant === 'caregiver' && summary.suggestedActions.length > 0 && (
-        <div className="border-t border-slate-100 pt-4">
+        <div className="border-t border-slate-100 pt-3">
           <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2">
             Suggested actions
           </p>

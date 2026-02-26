@@ -41,6 +41,9 @@ export function MetricTile({
   icon,
   subValue,
 }: MetricTileProps) {
+  const valueText = String(value)
+  const isLongValue = valueText.length > 14
+  const isTroubleValue = status === 'warning' || status === 'alert'
   const formattedTime = new Date(lastUpdatedAt).toLocaleString('en-SG', {
     hour: '2-digit',
     minute: '2-digit',
@@ -50,12 +53,12 @@ export function MetricTile({
     <TooltipProvider>
       <div
         className={cn(
-          'bg-white rounded-xl border border-slate-200 border-l-4 p-4 hover:shadow-md transition-shadow',
+          'bg-white rounded-xl border border-slate-200 border-l-4 p-3 hover:shadow-md transition-shadow',
           STATUS_BORDER[status]
         )}
       >
-        <div className="flex items-start justify-between mb-2">
-          <div className="flex items-center gap-1.5">
+        <div className="flex items-start justify-between mb-1.5">
+          <div className="flex items-center gap-1">
             {icon && <span className="text-slate-400">{icon}</span>}
             <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">{title}</p>
           </div>
@@ -71,9 +74,21 @@ export function MetricTile({
           </Tooltip>
         </div>
 
-        <div className="flex items-end gap-2 mb-1">
-          <span className="text-2xl font-bold text-slate-900 leading-none">{value}</span>
-          {unit && <span className="text-sm text-slate-500 mb-0.5">{unit}</span>}
+        <div className="flex items-end gap-1.5 mb-1 min-w-0">
+          <span
+            className={cn(
+              'font-bold leading-tight break-words',
+              isLongValue ? 'text-base sm:text-lg' : 'text-xl',
+              isTroubleValue ? 'text-red-700' : 'text-slate-900'
+            )}
+          >
+            {value}
+          </span>
+          {unit && (
+            <span className={cn('text-sm mb-0.5', isTroubleValue ? 'text-red-500' : 'text-slate-500')}>
+              {unit}
+            </span>
+          )}
           {trendArrow && (
             <span className={cn('mb-0.5', TREND_COLOR[trendColor])}>
               {trendArrow === 'up' && <TrendingUp className="w-4 h-4" />}
@@ -85,9 +100,9 @@ export function MetricTile({
 
         {subValue && <p className="text-xs text-slate-500 mb-1">{subValue}</p>}
 
-        <div className="flex items-center justify-between mt-2">
+        <div className="flex items-center justify-between mt-1.5">
           {streakLabel && (
-            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-medium">
+            <span className="text-xs bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded-full font-medium">
               {streakLabel}
             </span>
           )}

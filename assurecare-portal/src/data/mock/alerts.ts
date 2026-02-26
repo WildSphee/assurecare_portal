@@ -1,11 +1,11 @@
 import type { Alert } from '@/types'
 
 export const MOCK_ALERTS: Alert[] = [
-  // Ms. Tan — Yellow
+  // Ms. Tan — Red (heartache priority)
   {
     id: 'alert-001',
     patientId: 'patient-001',
-    severity: 'yellow',
+    severity: 'red',
     reasonCodes: ['MISSED_MEDS_STREAK_2'],
     evidencePointers: [
       {
