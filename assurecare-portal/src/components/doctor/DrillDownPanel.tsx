@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useUIStore } from '@/store/useUIStore'
 import { usePatient } from '@/hooks/usePatient'
@@ -109,6 +109,9 @@ export function DrillDownPanel() {
       >
         <DialogHeader className="sr-only">
           <DialogTitle>Patient Details</DialogTitle>
+          <DialogDescription>
+            Review patient overview, charts, timeline, and notes/actions in the doctor detail window.
+          </DialogDescription>
         </DialogHeader>
         {selectedPatientId && <DrillDownContent patientId={selectedPatientId} />}
       </DialogContent>

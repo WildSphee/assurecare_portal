@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -100,6 +101,9 @@ export function AppointmentScheduleForm({
             <Calendar className="w-4 h-4 text-primary" />
             Schedule Appointment
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Schedule a clinic appointment for the selected patient and optionally attach a clinical summary.
+          </DialogDescription>
         </DialogHeader>
 
         <p className="text-sm text-slate-500 -mt-1">

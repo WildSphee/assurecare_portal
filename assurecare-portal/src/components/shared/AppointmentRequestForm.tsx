@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -110,6 +111,9 @@ export function AppointmentRequestForm({
             <Calendar className="w-5 h-5 text-primary" />
             Request Appointment with Dr. Chan
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Submit an appointment request with prefilled AI-prepared context and preferred time windows.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">

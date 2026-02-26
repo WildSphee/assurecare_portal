@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { usePatient } from '@/hooks/usePatient'
 import { usePatientStore } from '@/store/usePatientStore'
@@ -62,6 +62,9 @@ export function EscalationPanel({ open, onClose }: EscalationPanelProps) {
         <DialogContent className="w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] sm:max-w-[560px] max-h-[85vh] overflow-y-auto rounded-2xl border border-slate-200 shadow-2xl">
           <DialogHeader>
             <DialogTitle>Escalation & Appointments</DialogTitle>
+            <DialogDescription className="sr-only">
+              Manage appointment requests and caregiver escalations for Ms. Tan.
+            </DialogDescription>
           </DialogHeader>
 
           {/* Tab switcher */}

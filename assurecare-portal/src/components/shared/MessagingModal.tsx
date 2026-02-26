@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -76,6 +77,9 @@ export function MessagingModal({
             <MessageSquare className="w-5 h-5 text-primary" />
             Send Message to {patientName}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Compose and send a message to the patient&apos;s AssureCare home device.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">

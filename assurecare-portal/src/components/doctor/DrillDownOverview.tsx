@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Calendar, Phone, Mail, User, MessageSquare, MapPin } from 'lucide-react'
+import { Calendar, Phone, Mail, User, MessageSquare, MapPin, Bot } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatDate, formatRelative } from '@/lib/dateUtils'
 import { usePatient } from '@/hooks/usePatient'
@@ -196,10 +196,10 @@ export function DrillDownOverview({ patientId }: { patientId: string }) {
         <button
           onClick={() => setShowSchedule(true)}
           className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
-          aria-label="Schedule appointment"
+          aria-label="Call the patient through AssureBot"
         >
-          <Calendar className="w-4 h-4" />
-          Schedule Appointment
+          <Bot className="w-4 h-4" />
+          Call the Patient through AssureBot
         </button>
         <button
           onClick={() => setShowMessage(true)}
