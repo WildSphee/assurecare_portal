@@ -23,7 +23,7 @@ export const MOCK_AI_SUMMARIES: AISummary[] = [
       'Contact the family doctor (Dr. Chan) today to review the mild heartache even though current vitals are normal',
     ],
     methodologyPoints: [
-      'Rule-based triage: reported heartache triggers escalation review.',
+      'Reasoning Agent: reported heartache triggers escalation review.',
       'BP thresholds: warning at systolic >= 140 or < 100; high risk at >= 150 or <= 90.',
       'HR thresholds: warning at > 100 or < 60; high risk at > 110 or < 50.',
       'Today\'s BP 126/80 and HR 76 were below those cutoffs, so this was symptom-driven.',
