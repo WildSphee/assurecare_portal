@@ -1,16 +1,35 @@
 import { useMemo } from 'react'
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
+import { STATIC_MAP_POINTS } from '@/data/mock/mapPoints'
 import { usePatientStore } from '@/store/usePatientStore'
 import { useUIStore } from '@/store/useUIStore'
 import { cn, getRiskLabel } from '@/lib/utils'
 import { REASON_CODE_LABELS } from '@/lib/reasonCodes'
 import { formatRelative } from '@/lib/dateUtils'
 
-const RISK_COLORS: Record<string, string> = {
-  red: '#DC2626',
-  yellow: '#D97706',
-  green: '#16A34A',
+const RISK_STYLES = {
+  red: {
+    fillColor: '#dc2626',
+    strokeColor: '#7f1d1d',
+    radius: 10,
+    fillOpacity: 0.96,
+    weight: 2.2,
+  },
+  yellow: {
+    fillColor: '#f59e0b',
+    strokeColor: '#92400e',
+    radius: 10,
+    fillOpacity: 0.96,
+    weight: 1.6,
+  },
+  green: {
+    fillColor: '#22c55e',
+    strokeColor: '#166534',
+    radius: 10,
+    fillOpacity: 0.96,
+    weight: 1.1,
+  },
 }
 
 export function PatientMap() {
@@ -73,6 +92,33 @@ export function PatientMap() {
     return rows
   }, [patients, searchQuery, activeFilters])
 
+  const mapPoints = useMemo(() => {
+    if (filteredPatients.length === 0) return []
+
+    const patientById = new Map(filteredPatients.map((patient) => [patient.id, patient]))
+
+    return STATIC_MAP_POINTS
+      .filter((point) => patientById.has(point.patientId))
+      .map((point) => {
+        const seedPatient = patientById.get(point.patientId)!
+        const latestAlert = alertByPatient.get(seedPatient.id)
+        const latestVitals = latestVitalsByPatient.get(seedPatient.id)
+
+        return {
+          ...point,
+          riskStatus: seedPatient.riskStatus,
+          topReason: latestAlert?.reasonCodes[0],
+          latestVitals,
+          lastCheckinAt: seedPatient.lastCheckinAt,
+          style: RISK_STYLES[seedPatient.riskStatus],
+        }
+      })
+      .sort((a, b) => {
+        const order = { green: 0, yellow: 1, red: 2 }
+        return order[a.riskStatus] - order[b.riskStatus]
+      })
+  }, [alertByPatient, filteredPatients, latestVitalsByPatient])
+
   const excluded = patients.length - filteredPatients.length
 
   return (
@@ -89,26 +135,20 @@ export function PatientMap() {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
 
-          {filteredPatients.map((patient) => {
-            const loc = patient.location!
-            const latestAlert = alertByPatient.get(patient.id)
-            const latestVitals = latestVitalsByPatient.get(patient.id)
-            const topReason = latestAlert?.reasonCodes[0]
-            const fillColor = RISK_COLORS[patient.riskStatus] ?? '#94a3b8'
-
+          {mapPoints.map((point) => {
             return (
               <CircleMarker
-                key={patient.id}
-                center={[loc.lat, loc.lng]}
-                radius={14}
+                key={point.id}
+                center={[point.location.lat, point.location.lng]}
+                radius={point.style.radius}
                 pathOptions={{
-                  color: fillColor,
-                  fillColor,
-                  fillOpacity: 0.85,
-                  weight: 2,
+                  color: point.style.strokeColor,
+                  fillColor: point.style.fillColor,
+                  fillOpacity: point.style.fillOpacity,
+                  weight: point.style.weight,
                 }}
                 eventHandlers={{
-                  click: () => setSelectedPatient(patient.id),
+                  click: () => setSelectedPatient(point.patientId),
                 }}
               >
                 <Popup>
@@ -116,42 +156,42 @@ export function PatientMap() {
                     <div className="flex items-center gap-2 mb-2">
                       <div
                         className="w-2.5 h-2.5 rounded-full shrink-0"
-                        style={{ backgroundColor: fillColor }}
+                        style={{ backgroundColor: point.style.fillColor }}
                       />
-                      <p className="font-semibold text-sm text-slate-900">{patient.name}</p>
+                      <p className="font-semibold text-sm text-slate-900">{point.displayName}</p>
                     </div>
                     <p
                       className={cn(
                         'text-xs font-medium mb-1',
-                        patient.riskStatus === 'red'
+                        point.riskStatus === 'red'
                           ? 'text-red-600'
-                          : patient.riskStatus === 'yellow'
+                          : point.riskStatus === 'yellow'
                           ? 'text-amber-600'
                           : 'text-emerald-600'
                       )}
                     >
-                      {getRiskLabel(patient.riskStatus)}
+                      {getRiskLabel(point.riskStatus)}
                     </p>
 
-                    {topReason && (
+                    {point.topReason && (
                       <p className="text-xs text-slate-500 mb-1">
-                        {REASON_CODE_LABELS[topReason]}
+                        {REASON_CODE_LABELS[point.topReason]}
                       </p>
                     )}
 
-                    {latestVitals && (
+                    {point.latestVitals && (
                       <p className="text-xs text-slate-500 mb-1">
-                        BP {latestVitals.bpSystolic}/{latestVitals.bpDiastolic} · HR{' '}
-                        {latestVitals.hrBpm} bpm
+                        BP {point.latestVitals.bpSystolic}/{point.latestVitals.bpDiastolic} · HR{' '}
+                        {point.latestVitals.hrBpm} bpm
                       </p>
                     )}
 
                     <p className="text-xs text-slate-400 mb-2">
-                      {formatRelative(patient.lastCheckinAt)}
+                      {formatRelative(point.lastCheckinAt)}
                     </p>
 
                     <button
-                      onClick={() => setSelectedPatient(patient.id)}
+                      onClick={() => setSelectedPatient(point.patientId)}
                       className="w-full text-xs text-white bg-primary rounded-md py-1.5 px-2 hover:bg-primary/90 transition-colors font-medium"
                     >
                       Open Details
@@ -167,8 +207,8 @@ export function PatientMap() {
       {/* Footer note */}
       {excluded > 0 && (
         <p className="text-xs text-slate-400 text-center mt-2 pb-2">
-          {filteredPatients.length} of {patients.length} patients shown
-          {excluded > 0 && ` (${excluded} ${excluded === 1 ? 'patient' : 'patients'} excluded by filters)`}
+          {mapPoints.length} map points generated from {filteredPatients.length} matching patients
+          {` (${excluded} ${excluded === 1 ? 'patient' : 'patients'} excluded by filters)`}
         </p>
       )}
     </div>

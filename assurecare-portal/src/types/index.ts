@@ -130,6 +130,11 @@ export interface AISummary {
   highlights: string[]
   keyDrivers: ReasonCode[]
   suggestedActions: string[]
+  methodologyPoints?: string[]
+  references?: {
+    label: string
+    url: string
+  }[]
   confidence: 'low' | 'medium' | 'high'
   dataCoverageRange: {
     from: string

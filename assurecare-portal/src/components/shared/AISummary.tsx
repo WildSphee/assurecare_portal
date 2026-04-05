@@ -133,20 +133,35 @@ export function AISummary({ summary, riskLevel, variant = 'caregiver' }: AISumma
         </p>
       )}
 
-      {/* Suggested actions (caregiver variant only) */}
-      {variant === 'caregiver' && summary.suggestedActions.length > 0 && (
+      {/* Caregiver rationale / references */}
+      {variant === 'caregiver' &&
+        ((summary.methodologyPoints && summary.methodologyPoints.length > 0) ||
+          (summary.references && summary.references.length > 0)) && (
         <div className="border-t border-slate-100 pt-3">
-          <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2">
-            Suggested actions
-          </p>
-          <div className="space-y-2">
-            {summary.suggestedActions.map((action, i) => (
-              <div key={i} className="flex items-start gap-2 text-sm text-slate-600">
-                <span className="text-primary mt-0.5">→</span>
-                <span>{action}</span>
-              </div>
-            ))}
-          </div>
+          {summary.methodologyPoints && summary.methodologyPoints.length > 0 && (
+            <div className="space-y-1.5">
+              {summary.methodologyPoints.map((point, index) => (
+                <p key={index} className="text-xs leading-relaxed text-slate-600">
+                  {point}
+                </p>
+              ))}
+            </div>
+          )}
+          {summary.references && summary.references.length > 0 && (
+            <div className="mt-2 space-y-1">
+              {summary.references.map((reference, index) => (
+                <a
+                  key={index}
+                  href={reference.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="block text-xs font-medium text-primary underline underline-offset-2 hover:opacity-80 transition-opacity"
+                >
+                  {reference.label}
+                </a>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

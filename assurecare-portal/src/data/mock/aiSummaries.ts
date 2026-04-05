@@ -8,7 +8,7 @@ export const MOCK_AI_SUMMARIES: AISummary[] = [
     date: '2026-02-25',
     summaryType: 'daily',
     narrative:
-      'Mrs Tan is having mild heartache at 09:05, stating "我胸口疼，是否应该向陈医生预约看诊？". Her latest vitals are within her usual range (BP 126/80 mmHg, HR 76 bpm). She missed her evening medication on the past 2 days but took her medication today. Given her recent cardiac history and new heartache symptom despite normal vitals, this remains a concern. Recommend contacting the family doctor (Dr. Chan) today to review symptoms and advise on next steps.',
+      'Mrs Tan reported mild heartache today. Chest discomfort is an escalation symptom, so Dr. Chan has been notified and follow-up is scheduled for Tuesday, Mar 3.',
     highlights: [
       // 'BP has increased from 130 to 148 mmHg (systolic) over the past 10 days',
       // 'Evening medication missed on Feb 23 and Feb 24 (2-day streak)',
@@ -21,6 +21,26 @@ export const MOCK_AI_SUMMARIES: AISummary[] = [
       'Consider calling Mrs Tan to check in on how she is feeling today',
       'Reinforce medication adherence after the 2 missed evening doses',
       'Contact the family doctor (Dr. Chan) today to review the mild heartache even though current vitals are normal',
+    ],
+    methodologyPoints: [
+      'Rule-based triage: reported heartache triggers escalation review.',
+      'BP thresholds: warning at systolic >= 140 or < 100; high risk at >= 150 or <= 90.',
+      'HR thresholds: warning at > 100 or < 60; high risk at > 110 or < 50.',
+      'Today\'s BP 126/80 and HR 76 were below those cutoffs, so this was symptom-driven.',
+    ],
+    references: [
+      {
+        label: 'American Heart Association: Warning signs of a heart attack',
+        url: 'https://www.heart.org/en/health-topics/heart-attack/warning-signs-of-a-heart-attack',
+      },
+      {
+        label: 'MedlinePlus: Chest pain',
+        url: 'https://medlineplus.gov/chestpain.html',
+      },
+      {
+        label: 'NHS: Chest pain',
+        url: 'https://www.nhs.uk/conditions/chest-pain/',
+      },
     ],
     confidence: 'high',
     dataCoverageRange: { from: '2026-02-18', to: '2026-02-25' },
